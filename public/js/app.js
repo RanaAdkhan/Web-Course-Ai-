@@ -13,14 +13,14 @@ let appConfig = {
     easypaisa: {
       name: "ایزی پیسہ (Easypaisa)",
       accountTitle: "Allah Ditta (اللہ دتہ)",
-      accountNumber: "0322-8765822",
-      rawNumber: "03228765822"
+      accountNumber: "0328-8765822",
+      rawNumber: "03288765822"
     },
     jazzcash: {
       name: "جاز کیش (JazzCash)",
       accountTitle: "Allah Ditta (اللہ دتہ)",
-      accountNumber: "0322-8765822",
-      rawNumber: "03228765822"
+      accountNumber: "0328-8765822",
+      rawNumber: "03288765822"
     }
   }
 };
@@ -99,7 +99,7 @@ function updateUiWithConfig() {
       const elTitle = document.getElementById('easypaisaTitle');
       const elNum = document.getElementById('easypaisaNumber');
       if (elTitle) elTitle.textContent = ep.accountTitle || 'Allah Ditta (اللہ دتہ)';
-      if (elNum) elNum.textContent = ep.accountNumber || '0322-8765822';
+      if (elNum) elNum.textContent = ep.accountNumber || '0328-8765822';
     }
 
     const jc = appConfig.paymentAccounts.jazzcash;
@@ -107,7 +107,7 @@ function updateUiWithConfig() {
       const elTitle = document.getElementById('jazzcashTitle');
       const elNum = document.getElementById('jazzcashNumber');
       if (elTitle) elTitle.textContent = jc.accountTitle || 'Allah Ditta (اللہ دتہ)';
-      if (elNum) elNum.textContent = jc.accountNumber || '0322-8765822';
+      if (elNum) elNum.textContent = jc.accountNumber || '0328-8765822';
     }
   }
 

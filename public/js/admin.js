@@ -10,11 +10,11 @@ let currentConfig = {
   paymentAccounts: {
     easypaisa: {
       accountTitle: "Allah Ditta (اللہ دتہ)",
-      accountNumber: "0322-8765822"
+      accountNumber: "0328-8765822"
     },
     jazzcash: {
       accountTitle: "Allah Ditta (اللہ دتہ)",
-      accountNumber: "0322-8765822"
+      accountNumber: "0328-8765822"
     }
   }
 };
