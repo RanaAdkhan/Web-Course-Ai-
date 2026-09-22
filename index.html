@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>آن لائن داخلہ فارم - کورس رجسٹریشن</title>
+  <title>GMAD TECH ACADEMY - آن لائن داخلہ پورٹل</title>
+  
+  <!-- Favicon / App Icon -->
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="shortcut icon" type="image/png" href="images/logo.png">
+  <link rel="apple-touch-icon" href="images/logo.png">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -50,8 +55,8 @@
       <!-- App Icon / Celebration -->
       <div class="relative shrink-0">
         <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 via-emerald-500 to-teal-400 p-0.5 shadow-lg">
-          <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center text-xl">
-            <span id="topNotifIcon">🎉</span>
+          <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center p-1 overflow-hidden">
+            <img src="images/logo.png" alt="GMAD" class="w-full h-full object-contain">
           </div>
         </div>
         <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-900 rounded-full animate-ping"></span>
@@ -61,7 +66,7 @@
       <div class="flex-1 min-w-0 text-right">
         <div class="flex items-center justify-between text-[11px] text-slate-400 mb-0.5">
           <span class="font-bold text-amber-400 flex items-center gap-1">
-            <i class="fa-solid fa-bell text-xs"></i> داخلہ الرٹ
+            <i class="fa-solid fa-bell text-xs"></i> GMAD TECH الرٹ
           </span>
           <span class="font-mono text-[10px] text-slate-400" id="topNotifTime">ابھی ابھی</span>
         </div>
@@ -84,13 +89,13 @@
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3 space-x-reverse">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-blue-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
-          <i class="fa-solid fa-graduation-cap text-lg"></i>
-        </div>
-        <div>
-          <h1 id="navCourseTitle" class="font-bold text-base sm:text-lg text-slate-800 tracking-tight">کورس داخلہ پورٹل</h1>
-          <p class="text-xs text-slate-500">آن لائن ایڈمیشن اور رجسٹریشن فارم</p>
-        </div>
+        <a href="index.html" class="flex items-center space-x-3 space-x-reverse group">
+          <img src="images/logo.png" alt="GMAD TECH ACADEMY" class="w-11 h-11 rounded-xl object-contain bg-slate-950 p-1 shadow-md border border-slate-200 group-hover:scale-105 transition-transform">
+          <div>
+            <h1 class="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight leading-none">GMAD TECH ACADEMY</h1>
+            <p class="text-[11px] sm:text-xs text-slate-500 font-medium mt-1">Learn. Create. Lead. | آن لائن داخلہ پورٹل</p>
+          </div>
+        </a>
       </div>
       <div class="flex items-center space-x-2 space-x-reverse">
         <!-- Direct Official WhatsApp Link -->
@@ -115,6 +120,15 @@
     <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
     
     <div class="relative max-w-4xl mx-auto text-center">
+      <!-- Academy Branding Badge -->
+      <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 text-white border border-white/20 mb-3.5 backdrop-blur-md shadow-lg">
+        <img src="images/logo.png" alt="GMAD TECH ACADEMY" class="w-6 h-6 rounded-md object-contain bg-slate-950 p-0.5 shadow">
+        <span class="tracking-wider uppercase text-amber-300 font-extrabold text-xs sm:text-sm">GMAD TECH ACADEMY</span>
+        <span class="text-blue-200 hidden sm:inline">• Learn. Create. Lead.</span>
+      </div>
+
+      <br class="hidden sm:inline">
+
       <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-200 border border-blue-400/30 mb-4 backdrop-blur-sm">
         <i class="fa-solid fa-sparkles text-amber-400"></i>
         <span>داخلہ جاری ہے - محدود نشستیں</span>
@@ -589,10 +603,14 @@
         
         <!-- Slip Header -->
         <div class="text-center pb-5 border-b-2 border-dashed border-slate-200">
-          <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 text-2xl mb-2">
-            <i class="fa-solid fa-award"></i>
+          <div class="flex items-center justify-center gap-3 mb-2">
+            <img src="images/logo.png" alt="GMAD TECH ACADEMY" class="w-12 h-12 rounded-2xl object-contain bg-slate-950 p-1 shadow-md border border-slate-300">
+            <div class="text-right">
+              <h1 class="font-black text-xl text-slate-900 leading-tight">GMAD TECH ACADEMY</h1>
+              <p class="text-[11px] text-brand-600 font-bold font-mono">Learn. Create. Lead.</p>
+            </div>
           </div>
-          <h2 class="urdu-title text-2xl font-bold text-slate-800" id="slipCourseTitle">کورس داخلہ تصدیقی سلپ</h2>
+          <h2 class="urdu-title text-xl sm:text-2xl font-bold text-slate-800" id="slipCourseTitle">کورس داخلہ تصدیقی سلپ</h2>
           <p class="text-xs text-slate-500 font-mono" id="slipRegNo">رجسٹریشن نمبر: ADM-2026-0001</p>
           <div class="mt-2 inline-block px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300" id="slipStatus">
             زیرِ تصدیق (فیس ویریفیکیشن جاری ہے)
