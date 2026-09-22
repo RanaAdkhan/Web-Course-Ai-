@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>آن لائن داخلہ فارم - کورس رجسٹریشن</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Jameel Noori Nastaleeq & Urdu Fonts -->
+  <link href="https://fonts.cdnfonts.com/css/jameel-noori-nastaleeq" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Sans+Arabic:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- Top Navbar -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3 space-x-reverse">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+          <i class="fa-solid fa-graduation-cap text-lg"></i>
+        </div>
+        <div>
+          <h1 id="navCourseTitle" class="font-bold text-lg text-slate-800 tracking-tight">کورس داخلہ پورٹل</h1>
+          <p class="text-xs text-slate-500">آن لائن ایڈمیشن اور رجسٹریشن فارم</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2 space-x-reverse">
+        <a href="admin.html" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-brand-600 bg-slate-100 hover:bg-brand-50 px-3 py-1.5 rounded-lg transition-all border border-slate-200">
+          <i class="fa-solid fa-user-shield"></i>
+          <span>ایڈمن پینل</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero & Course Banner -->
+  <section class="relative bg-gradient-to-b from-brand-900 via-brand-800 to-brand-900 text-white pt-10 pb-16 px-4 overflow-hidden">
+    <!-- Decorative Islamic / Modern Pattern Overlay -->
+    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+    
+    <div class="relative max-w-4xl mx-auto text-center">
+      <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 mb-4 backdrop-blur-sm">
+        <i class="fa-solid fa-sparkles text-amber-400"></i>
+        <span>داخلہ جاری ہے - محدود نشستیں</span>
+      </span>
+
+      <h2 id="heroCourseTitle" class="urdu-title text-2xl sm:text-4xl font-bold mb-3 tracking-wide leading-relaxed">
+        آن لائن پروفیشنل کورس داخلہ فارم
+      </h2>
+      <p id="heroCourseDesc" class="text-emerald-100 text-sm sm:text-base max-w-2xl mx-auto mb-6 opacity-90 leading-normal">
+        شاندار مستقبل کی طرف ایک قدم۔ فارم پر کر کے اپنی نشست محفوظ کریں اور فیس ادا کر کے رسید منسلک کریں۔
+      </p>
+
+      <!-- Special Madrassa Discount Highlight Banner -->
+      <div class="inline-block bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-slate-900 font-bold px-5 py-2.5 rounded-2xl shadow-xl border border-amber-300 transform hover:scale-105 transition-all">
+        <div class="flex items-center gap-2 text-sm sm:text-base">
+          <i class="fa-solid fa-award text-slate-900 text-lg"></i>
+          <span>دینی مدارس و جامعات کے طلباء کرام کے لیے فیس میں 50 فیصد خصوصی رعایت!</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto px-4 -mt-8 pb-20 relative z-10">
+    <div class="bg-white rounded-3xl card-shadow border border-slate-100 p-6 sm:p-10">
+      
+      <!-- Form Submission Status Alert -->
+      <div id="formAlert" class="hidden mb-6 p-4 rounded-2xl border text-sm flex items-start gap-3"></div>
+
+      <form id="admissionForm" enctype="multipart/form-data" novalidate>
+        
+        <!-- SECTION 1: ذاتی معلومات (Personal Information) -->
+        <div class="mb-10">
+          <div class="flex items-center gap-3 pb-3 border-b border-slate-100 mb-6">
+            <span class="w-8 h-8 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">
+              <i class="fa-regular fa-user"></i>
+            </span>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">1. ذاتی معلومات (Personal Details)</h3>
+              <p class="text-xs text-slate-500">طالب علم کی بنیادی اور شناختی تفصیلات درج کریں</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- Full Name -->
+            <div>
+              <label for="fullName" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                طالب علم کا مکمل نام <span class="text-rose-500">*</span>
+              </label>
+              <input type="text" id="fullName" name="fullName" required placeholder="مثال: محمد احمد" 
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-slate-50/50">
+            </div>
+
+            <!-- Father Name -->
+            <div>
+              <label for="fatherName" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                والد کا نام <span class="text-rose-500">*</span>
+              </label>
+              <input type="text" id="fatherName" name="fatherName" required placeholder="مثال: عبداللہ خان" 
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-slate-50/50">
+            </div>
+
+            <!-- CNIC / B-Form -->
+            <div>
+              <label for="cnic" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                قومی شناختی کارڈ نمبر / ب فارم <span class="text-rose-500">*</span>
+              </label>
+              <input type="text" id="cnic" name="cnic" required placeholder="12345-1234567-1" maxlength="15"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-slate-50/50 font-mono text-left dir-ltr">
+              <span class="text-[11px] text-slate-400 mt-1 block">بغیر اسپیس یا ڈیش کے یا ڈیش کے ساتھ (13 ہندسے)</span>
+            </div>
+
+            <!-- WhatsApp / Mobile -->
+            <div>
+              <label for="phone" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                موبائل / واٹس ایپ نمبر <span class="text-rose-500">*</span>
+              </label>
+              <input type="tel" id="phone" name="phone" required placeholder="0300-1234567"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-slate-50/50 font-mono text-left dir-ltr">
+              <span class="text-[11px] text-slate-400 mt-1 block">رابطے اور کلاس کے واٹس ایپ گروپ کے لیے</span>
+            </div>
+
+            <!-- Email (Optional) -->
+            <div>
+              <label for="email" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                ای میل ایڈریس <span class="text-slate-400 font-normal">(اختیاری)</span>
+              </label>
+              <input type="email" id="email" name="email" placeholder="example@gmail.com"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-slate-50/50 font-mono text-left dir-ltr">
+            </div>
+
+            <!-- Education Qualification -->
+            <div>
+              <label for="qualification" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                موجودہ تعلیمی قابلیت <span class="text-rose-500">*</span>
+              </label>
+              <select id="qualification" name="qualification" required
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-slate-50/50">
+                <option value="">تعلیمی قابلیت منتخب کریں</option>
+                <option value="حفظ قرآن کریم">حفظ قرآن کریم</option>
+                <option value="مڈل">مڈل (8th)</option>
+                <option value="میٹرک">میٹرک (Matric)</option>
+                <option value="انٹرمیڈیٹ / ایف اے / ایف ایس سی">انٹرمیڈیٹ (FA / FSc)</option>
+                <option value="گریجویشن / بی اے / بی ایس">گریجویشن (BA / BSc / BS)</option>
+                <option value="ماسٹرز / ایم اے">ماسٹرز (MA / MSc)</option>
+                <option value="دیگر">دیگر</option>
+              </select>
+            </div>
+
+            <!-- City -->
+            <div>
+              <label for="city" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                شہر کا نام <span class="text-rose-500">*</span>
+              </label>
+              <input type="text" id="city" name="city" required placeholder="مثال: لاہور، کراچی، راولپنڈی"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-slate-50/50">
+            </div>
+
+            <!-- Full Address -->
+            <div>
+              <label for="address" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                مکمل رہائشی پتہ
+              </label>
+              <input type="text" id="address" name="address" placeholder="محلہ، گلی نمبر، مکان نمبر"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-slate-50/50">
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: طالب علم کی تصویر (Passport Size Photo) -->
+        <div class="mb-10">
+          <div class="flex items-center gap-3 pb-3 border-b border-slate-100 mb-6">
+            <span class="w-8 h-8 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">
+              <i class="fa-solid fa-camera"></i>
+            </span>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">2. طالب علم کی تصویر (Passport Size Photo)</h3>
+              <p class="text-xs text-slate-500">پاسپورٹ سائز واضح تصویر اپلوڈ کریں (JPG, PNG یا WEBP)</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center gap-6 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <!-- Photo Preview Frame -->
+            <div class="relative w-32 h-40 rounded-2xl bg-white border-2 border-dashed border-slate-300 flex flex-col items-center justify-center overflow-hidden shadow-inner group">
+              <img id="photoPreviewImg" class="w-full h-full object-cover hidden" alt="پیش نظارہ">
+              <div id="photoPlaceholder" class="text-center p-2">
+                <i class="fa-solid fa-user-tie text-3xl text-slate-300 mb-2"></i>
+                <span class="text-[11px] text-slate-400 block font-medium">تصویر یہاں نظر آئے گی</span>
+              </div>
+            </div>
+
+            <!-- Upload Controls -->
+            <div class="flex-1 w-full text-center sm:text-right">
+              <label class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm cursor-pointer shadow-md shadow-brand-600/20 transition-all">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>تصویر منتخب کریں <span class="text-rose-200">*</span></span>
+                <input type="file" id="studentPhoto" name="studentPhoto" accept="image/*" required class="hidden" onchange="previewImage(this, 'photoPreviewImg', 'photoPlaceholder', 'photoFileName')">
+              </label>
+              <div id="photoFileName" class="text-xs text-slate-500 mt-2 font-mono">کوئی تصویر منتخب نہیں ہوئی</div>
+              <p class="text-xs text-slate-400 mt-1">طالب علم کا چہرہ واضح ہونا چاہیے تاکہ شناختی کارڈ اور سند کے لیے استعمال ہو سکے۔</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: دینی مدرسہ طالب علم ڈسکاؤنٹ (50% Madrassa Discount) -->
+        <div class="mb-10 p-6 rounded-3xl bg-gradient-to-br from-emerald-50/70 via-teal-50/40 to-slate-50 border border-emerald-200 shadow-sm">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <span class="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-emerald-500/20">
+                <i class="fa-solid fa-mosque"></i>
+              </span>
+              <div>
+                <h3 class="text-lg font-bold text-slate-900">3. دینی مدرسہ طالب علم رعایت (50% Discount)</h3>
+                <p class="text-xs text-emerald-800">اگر آپ کسی دینی مدرسے یا جامعہ کے طالب علم ہیں تو آپ کے لیے 50٪ فیس معاف ہے</p>
+              </div>
+            </div>
+
+            <!-- Madrassa Checkbox Switch -->
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="isMadrassaStudent" name="isMadrassaStudent" value="true" class="sr-only peer">
+              <div class="w-14 h-8 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:right-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-600"></div>
+            </label>
+          </div>
+
+          <!-- Dynamic Madrassa Details Area (shown when checked) -->
+          <div id="madrassaFieldsArea" class="hidden mt-6 pt-6 border-t border-emerald-200/80 transition-all">
+            <!-- Success Announcement Banner -->
+            <div class="madrassa-discount-box rounded-2xl p-4 mb-5 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-gift text-lg"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-emerald-900 text-sm">مبارک ہو! آپ کے لیے 50 فیصد خصوصی رعایت لاگو ہو گئی ہے۔</h4>
+                <p class="text-xs text-emerald-700">تصدیق کے لیے برائے مہربانی اپنے جامعہ / مدرسے کی معلومات اور کارڈ فراہم کریں۔</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <!-- Madrassa Name -->
+              <div>
+                <label for="madrassaName" class="block text-sm font-semibold text-slate-800 mb-1.5">
+                  جامعہ / مدرسے کا نام <span class="text-rose-500">*</span>
+                </label>
+                <input type="text" id="madrassaName" name="madrassaName" placeholder="مثال: جامعہ دارالعلوم کراچی / جامعہ اشرفیہ"
+                  class="w-full px-4 py-2.5 rounded-xl border border-emerald-300 text-sm input-field focus:outline-none bg-white">
+              </div>
+
+              <!-- Madrassa Class / Grade -->
+              <div>
+                <label for="madrassaClass" class="block text-sm font-semibold text-slate-800 mb-1.5">
+                  موجودہ درجہ / کلاس <span class="text-rose-500">*</span>
+                </label>
+                <input type="text" id="madrassaClass" name="madrassaClass" placeholder="مثال: درجہ رابعہ / سادسہ / دورہ حدیث شریف"
+                  class="w-full px-4 py-2.5 rounded-xl border border-emerald-300 text-sm input-field focus:outline-none bg-white">
+              </div>
+            </div>
+
+            <!-- Madrassa Card Upload -->
+            <div class="mt-5">
+              <label class="block text-sm font-semibold text-slate-800 mb-2">
+                مدرسہ شناختی کارڈ یا تصدیقی خط / دستخط شدہ رسید
+              </label>
+              <div class="flex items-center gap-4 p-3 rounded-2xl bg-white border border-emerald-200">
+                <label class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-semibold text-xs cursor-pointer transition-all">
+                  <i class="fa-solid fa-id-card"></i>
+                  <span>کارڈ / ثبوت منتخب کریں</span>
+                  <input type="file" id="madrassaCard" name="madrassaCard" accept="image/*,.pdf" class="hidden" onchange="previewFileName(this, 'madrassaCardName')">
+                </label>
+                <span id="madrassaCardName" class="text-xs text-slate-500 font-mono truncate">کوئی فائل منتخب نہیں ہوئی</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 4: فیس کی ادائیگی (Fee Payment Section) -->
+        <div class="mb-10">
+          <div class="flex items-center gap-3 pb-3 border-b border-slate-100 mb-6">
+            <span class="w-8 h-8 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">
+              <i class="fa-solid fa-receipt"></i>
+            </span>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">4. فیس کی تفصیلات اور ادائیگی (Fee Payment)</h3>
+              <p class="text-xs text-slate-500">فیس درج ذیل اکاؤنٹس میں بھیج کر رسید اور ٹرانزیکشن آئی ڈی درج کریں</p>
+            </div>
+          </div>
+
+          <!-- Live Fee Calculation Card -->
+          <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl p-6 mb-6 shadow-lg">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center divide-y sm:divide-y-0 sm:divide-x sm:divide-x-reverse divide-slate-700">
+              <div class="py-2">
+                <div class="text-xs text-slate-400 mb-1">کورس کی اصل فیس</div>
+                <div id="displayOriginalFee" class="text-xl font-bold font-mono">5,000 روپے</div>
+              </div>
+              <div class="py-2">
+                <div class="text-xs text-slate-400 mb-1">مدرسہ ڈسکاؤنٹ</div>
+                <div id="displayDiscount" class="text-xl font-bold font-mono text-emerald-400">0% (0 روپے)</div>
+              </div>
+              <div class="py-2">
+                <div class="text-xs text-amber-400 font-semibold mb-1">کل واجب الاداء رقم</div>
+                <div id="displayPayableFee" class="text-2xl font-black font-mono text-white">5,000 روپے</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Accounts Options -->
+          <div class="mb-6">
+            <div class="text-xs font-semibold text-slate-500 mb-3">فیس ادائیگی کے منظور شدہ طریقے (کسی ایک میں رقم جمع کروائیں):</div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="paymentAccountsContainer">
+              <!-- Dynamically populated or fallback -->
+              
+              <!-- Easypaisa Card -->
+              <div class="p-4 rounded-2xl border border-slate-200 bg-white hover:border-emerald-500 transition-all card-shadow">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+                    ایزی پیسہ (Easypaisa)
+                  </span>
+                  <button type="button" onclick="copyText('03001234567')" class="text-xs text-brand-600 hover:underline">
+                    <i class="fa-regular fa-copy"></i> کاپی
+                  </button>
+                </div>
+                <div class="text-xs text-slate-500 mb-1">اکاؤنٹ ٹائٹل: <b class="text-slate-700" id="easypaisaTitle">کورس ایڈمن</b></div>
+                <div class="text-base font-bold font-mono text-slate-800 tracking-wider" id="easypaisaNumber">0300-1234567</div>
+              </div>
+
+              <!-- JazzCash Card -->
+              <div class="p-4 rounded-2xl border border-slate-200 bg-white hover:border-red-500 transition-all card-shadow">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+                    جاز کیش (JazzCash)
+                  </span>
+                  <button type="button" onclick="copyText('03217654321')" class="text-xs text-red-600 hover:underline">
+                    <i class="fa-regular fa-copy"></i> کاپی
+                  </button>
+                </div>
+                <div class="text-xs text-slate-500 mb-1">اکاؤنٹ ٹائٹل: <b class="text-slate-700" id="jazzcashTitle">کورس ایڈمن</b></div>
+                <div class="text-base font-bold font-mono text-slate-800 tracking-wider" id="jazzcashNumber">0321-7654321</div>
+              </div>
+
+              <!-- Bank Transfer Card -->
+              <div class="p-4 rounded-2xl border border-slate-200 bg-white hover:border-blue-500 transition-all card-shadow">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-full bg-blue-600 inline-block"></span>
+                    بینک اکاؤنٹ
+                  </span>
+                  <button type="button" onclick="copyText('01010102030405')" class="text-xs text-blue-600 hover:underline">
+                    <i class="fa-regular fa-copy"></i> کاپی
+                  </button>
+                </div>
+                <div class="text-xs text-slate-500 mb-0.5"><span id="bankName">Meezan Bank</span></div>
+                <div class="text-xs text-slate-500 mb-1">ٹائٹل: <b class="text-slate-700" id="bankTitle">کورس فاؤنڈیشن</b></div>
+                <div class="text-xs font-mono font-bold text-slate-800 tracking-tight" id="bankNumber">A/C: 01010102030405</div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Payment Proof Inputs -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 p-5 rounded-2xl bg-slate-50 border border-slate-200">
+            <!-- Selected Method -->
+            <div>
+              <label for="paymentMethod" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                ادائیگی کس ذریعے سے کی؟ <span class="text-rose-500">*</span>
+              </label>
+              <select id="paymentMethod" name="paymentMethod" required
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-white">
+                <option value="easypaisa">ایزی پیسہ (Easypaisa)</option>
+                <option value="jazzcash">جاز کیش (JazzCash)</option>
+                <option value="bank">بینک ٹرانسفر (Bank Transfer)</option>
+                <option value="other">دیگر</option>
+              </select>
+            </div>
+
+            <!-- Transaction ID -->
+            <div>
+              <label for="transactionId" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                ٹرانزیکشن آئی ڈی (TID / Trx ID)
+              </label>
+              <input type="text" id="transactionId" name="transactionId" placeholder="مثال: 84920491823"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-white font-mono text-left dir-ltr">
+            </div>
+
+            <!-- Payment Receipt Upload (Required) -->
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-semibold text-slate-700 mb-1.5">
+                فیس ادائیگی کی رسید یا سکرین شاٹ اپلوڈ کریں <span class="text-rose-500">*</span>
+              </label>
+              
+              <div class="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl border-2 border-dashed border-slate-300 bg-white hover:border-brand-500 transition-all">
+                <div class="w-20 h-20 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
+                  <img id="receiptPreviewImg" class="w-full h-full object-cover hidden" alt="رسید">
+                  <i id="receiptPlaceholder" class="fa-solid fa-file-invoice-dollar text-2xl text-slate-300"></i>
+                </div>
+                <div class="flex-1 text-center sm:text-right">
+                  <label class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs cursor-pointer transition-all">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                    <span>رسید منتخب کریں</span>
+                    <input type="file" id="paymentReceipt" name="paymentReceipt" accept="image/*,.pdf" required class="hidden" onchange="previewImage(this, 'receiptPreviewImg', 'receiptPlaceholder', 'receiptFileName')">
+                  </label>
+                  <span id="receiptFileName" class="text-xs text-slate-500 font-mono block mt-1">کوئی رسید منتخب نہیں ہوئی</span>
+                  <span class="text-[11px] text-slate-400">جاز کیش، ایزی پیسہ یا بینک سلپ کا مکمل اسکرین شاٹ اپلوڈ کریں۔</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 5: اقرار نامہ اور سبمٹ (Declaration & Submit) -->
+        <div class="pt-6 border-t border-slate-200">
+          <div class="flex items-start gap-3 mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+            <input type="checkbox" id="declaration" name="declaration" required class="mt-1 w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+            <label for="declaration" class="text-xs text-slate-600 leading-relaxed cursor-pointer select-none">
+              میں حلفاً اقرار کرتا ہوں کہ اس فارم میں درج کردہ تمام معلومات، شناختی تفصیلات اور فیس رسید بالکل درست ہیں۔ کسی بھی غلط بیانی کی صورت میں ادارہ میرا داخلہ منسوخ کرنے کا مجاز ہوگا۔
+            </label>
+          </div>
+
+          <button type="submit" id="submitBtn" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-brand-600 via-emerald-600 to-teal-600 hover:from-brand-700 hover:to-teal-700 text-white font-bold text-base shadow-xl shadow-brand-600/25 flex items-center justify-center gap-3 transition-all transform active:scale-95 disabled:opacity-50">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span id="submitBtnText">داخلہ فارم اور فیس جمع کروائیں</span>
+            <div id="submitSpinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </main>
+
+  <!-- SUCCESS / ADMISSION SLIP MODAL -->
+  <div id="admissionSlipModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 card-shadow border border-slate-100 relative my-8">
+      
+      <!-- Close Button (Screen only) -->
+      <button type="button" onclick="closeSlipModal()" class="no-print absolute top-5 left-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm transition-all">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Printable Slip Content -->
+      <div id="admissionSlipContent" class="space-y-6">
+        
+        <!-- Slip Header -->
+        <div class="text-center pb-5 border-b-2 border-dashed border-slate-200">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 text-2xl mb-2">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <h2 class="urdu-title text-2xl font-bold text-slate-800" id="slipCourseTitle">کورس داخلہ تصدیقی سلپ</h2>
+          <p class="text-xs text-slate-500 font-mono" id="slipRegNo">رجسٹریشن نمبر: ADM-2026-0001</p>
+          <div class="mt-2 inline-block px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300" id="slipStatus">
+            زیرِ تصدیق (فیس ویریفیکیشن جاری ہے)
+          </div>
+        </div>
+
+        <!-- Student Profile Row -->
+        <div class="flex items-center gap-5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+          <div class="w-24 h-28 rounded-xl bg-white border border-slate-200 overflow-hidden shadow-sm shrink-0">
+            <img id="slipPhoto" src="" alt="طالب علم تصویر" class="w-full h-full object-cover">
+          </div>
+          <div class="grid grid-cols-2 gap-3 flex-1 text-xs sm:text-sm">
+            <div>
+              <span class="text-slate-400 block text-[11px]">طالب علم کا نام</span>
+              <span class="font-bold text-slate-800" id="slipName">-</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[11px]">والد کا نام</span>
+              <span class="font-bold text-slate-800" id="slipFatherName">-</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[11px]">شناختی کارڈ / ب فارم</span>
+              <span class="font-bold font-mono text-slate-800" id="slipCnic">-</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[11px]">موبائل / واٹس ایپ</span>
+              <span class="font-bold font-mono text-slate-800" id="slipPhone">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slip Details Table -->
+        <div class="border rounded-2xl overflow-hidden border-slate-200 text-xs sm:text-sm">
+          <table class="w-full text-right">
+            <tbody class="divide-y divide-slate-200">
+              <tr class="bg-slate-50/50">
+                <td class="py-2.5 px-4 font-semibold text-slate-600">شہر / پتہ</td>
+                <td class="py-2.5 px-4 text-slate-800" id="slipCityAddress">-</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-4 font-semibold text-slate-600">مدرسہ طالب علم کی حیثیت</td>
+                <td class="py-2.5 px-4 text-slate-800" id="slipMadrassaInfo">-</td>
+              </tr>
+              <tr class="bg-slate-50/50">
+                <td class="py-2.5 px-4 font-semibold text-slate-600">اصل فیس</td>
+                <td class="py-2.5 px-4 font-mono font-bold text-slate-800" id="slipOriginalFee">-</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-4 font-semibold text-slate-600">رعایت (ڈسکاؤنٹ)</td>
+                <td class="py-2.5 px-4 font-mono font-bold text-emerald-600" id="slipDiscount">-</td>
+              </tr>
+              <tr class="bg-emerald-50/50">
+                <td class="py-2.5 px-4 font-bold text-emerald-900">ادا شدہ فیس</td>
+                <td class="py-2.5 px-4 font-mono font-black text-emerald-700 text-base" id="slipPaidFee">-</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-4 font-semibold text-slate-600">ٹرانزیکشن آئی ڈی</td>
+                <td class="py-2.5 px-4 font-mono text-slate-800" id="slipTid">-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Instructions Notice -->
+        <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs leading-relaxed">
+          <i class="fa-solid fa-circle-info text-amber-600 ml-1"></i>
+          <b>نوٹ:</b> آپ کی فیس اور اسکرین شاٹ کی تصدیق کے بعد آپ کا داخلہ حتمی ہو جائے گا اور آپ کو بذریعہ واٹس ایپ کلاس گروپ میں شامل کر لیا جائے گا۔ برائے مہربانی اس سلپ کا سکرین شاٹ محفوظ رکھیں۔
+        </div>
+
+      </div>
+
+      <!-- Action Buttons (Screen only) -->
+      <div class="no-print mt-6 pt-5 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <button type="button" onclick="window.print()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all">
+          <i class="fa-solid fa-print"></i>
+          <span>پرنٹ یا PDF میں محفوظ کریں</span>
+        </button>
+
+        <a id="slipWhatsappShare" href="#" target="_blank" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all">
+          <i class="fa-brands fa-whatsapp text-base"></i>
+          <span>ایڈمن کو واٹس ایپ پر مطلع کریں</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="hidden fixed bottom-5 right-5 z-50 bg-slate-900 text-white text-xs sm:text-sm px-4 py-3 rounded-xl shadow-xl flex items-center gap-2">
+    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toastMsg">کامیاب</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+</body>
+</html>
