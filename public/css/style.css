@@ -24,10 +24,10 @@
 }
 
 :root {
-  --primary: #059669; /* Emerald 600 */
-  --primary-dark: #047857; /* Emerald 700 */
-  --primary-light: #d1fae5; /* Emerald 100 */
-  --secondary: #1e293b; /* Slate 800 */
+  --primary: #2563eb; /* Royal Blue 600 */
+  --primary-dark: #1d4ed8; /* Blue 700 */
+  --primary-light: #dbeafe; /* Blue 100 */
+  --secondary: #0f172a; /* Slate 900 */
   --accent: #f59e0b; /* Amber 500 */
   --urdu-font: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
 }
@@ -89,8 +89,8 @@ input, select, textarea, button, label {
 }
 
 .upload-dropzone:hover {
-  border-color: #10b981;
-  background-color: #f0fdf4;
+  border-color: #3b82f6;
+  background-color: #eff6ff;
 }
 
 /* Custom Scrollbar */
@@ -115,14 +115,14 @@ input, select, textarea, button, label {
 }
 
 .input-field:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 /* Madrassa Badge Glow */
 .madrassa-discount-box {
-  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-  border: 2px solid #34d399;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 2px solid #60a5fa;
   position: relative;
   overflow: hidden;
 }
