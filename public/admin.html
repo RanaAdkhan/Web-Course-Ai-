@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ایڈمن ڈیش بورڈ - کورس داخلہ کنٹرول پینل</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Jameel Noori Nastaleeq & Urdu Fonts -->
+  <link href="https://fonts.cdnfonts.com/css/jameel-noori-nastaleeq" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Sans+Arabic:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased selection:bg-brand-500 selection:text-white min-h-screen">
+
+  <!-- ADMIN LOGIN VIEW -->
+  <div id="loginView" class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white max-w-md w-full rounded-3xl p-8 card-shadow border border-slate-200/80 text-center">
+      <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-inner">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h2 class="text-xl font-bold text-slate-800 mb-1">ایڈمن پورٹل لاگ اِن</h2>
+      <p class="text-xs text-slate-500 mb-6">کورس داخلہ اور فیس مینیجمنٹ سسٹم تک رسائی کے لیے پاس ورڈ درج کریں</p>
+
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label for="adminPasswordInput" class="block text-right text-xs font-semibold text-slate-600 mb-1.5">ایڈمن پاس ورڈ</label>
+          <div class="relative">
+            <input type="password" id="adminPasswordInput" required placeholder="پاس ورڈ درج کریں..." 
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-slate-50 text-left font-mono">
+          </div>
+          <p class="text-[11px] text-slate-400 text-right mt-1">ڈیفالٹ پاس ورڈ: <span class="font-mono font-bold text-slate-600">admin123</span></p>
+        </div>
+
+        <div id="loginError" class="hidden text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-2.5 text-right"></div>
+
+        <button type="submit" id="loginBtn" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md shadow-brand-600/20 transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          <span>لاگ اِن کریں</span>
+        </button>
+      </form>
+
+      <div class="mt-6 pt-5 border-t border-slate-100 text-center">
+        <a href="index.html" class="text-xs text-slate-500 hover:text-brand-600 transition-all flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-arrow-right"></i>
+          <span>طالب علم ایڈمیشن فارم پر واپس جائیں</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN DASHBOARD VIEW (Shown after login) -->
+  <div id="dashboardView" class="hidden">
+    
+    <!-- Admin Top Navbar -->
+    <header class="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center space-x-3 space-x-reverse">
+          <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white text-lg shadow-md">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-base sm:text-lg">کورس ایڈمن ڈیش بورڈ</h1>
+            <span class="text-[11px] text-slate-400 font-mono" id="adminHeaderCourseTitle">آن لائن کورس پورٹل</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- View Site Button -->
+          <a href="index.html" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-xl transition-all border border-slate-700">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            <span>فارم دیکھیں</span>
+          </a>
+
+          <!-- Settings Button -->
+          <button type="button" onclick="openSettingsModal()" class="inline-flex items-center gap-1.5 text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-xl transition-all border border-slate-700">
+            <i class="fa-solid fa-gear"></i>
+            <span>سیٹنگز و فیس</span>
+          </button>
+
+          <!-- Logout Button -->
+          <button type="button" onclick="adminLogout()" class="inline-flex items-center gap-1.5 text-xs text-rose-300 hover:text-white bg-rose-950/40 hover:bg-rose-900 px-3 py-2 rounded-xl transition-all border border-rose-800/50">
+            <i class="fa-solid fa-power-off"></i>
+            <span>لاگ آؤٹ</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Dashboard Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        
+        <!-- Total Applicants -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-slate-500 font-semibold">کل درخواستیں</span>
+            <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-users"></i>
+            </span>
+          </div>
+          <div id="statTotal" class="text-2xl font-black font-mono text-slate-800">0</div>
+        </div>
+
+        <!-- Pending Applicants -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-amber-600 font-semibold">زیرِ تصدیق</span>
+            <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-clock"></i>
+            </span>
+          </div>
+          <div id="statPending" class="text-2xl font-black font-mono text-amber-600">0</div>
+        </div>
+
+        <!-- Approved Applicants -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-emerald-600 font-semibold">منظور شدہ</span>
+            <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-circle-check"></i>
+            </span>
+          </div>
+          <div id="statApproved" class="text-2xl font-black font-mono text-emerald-600">0</div>
+        </div>
+
+        <!-- Madrassa Students (50% discount) -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-teal-600 font-semibold">مدرسہ طلباء (50%)</span>
+            <span class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-mosque"></i>
+            </span>
+          </div>
+          <div id="statMadrassa" class="text-2xl font-black font-mono text-teal-600">0</div>
+        </div>
+
+        <!-- Total Fees Collected -->
+        <div class="col-span-2 lg:col-span-1 bg-gradient-to-tr from-slate-900 to-slate-800 text-white p-5 rounded-2xl card-shadow">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-slate-300 font-semibold">کل جمع شدہ فیس</span>
+            <span class="w-8 h-8 rounded-xl bg-slate-700 text-emerald-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-money-bill-wave"></i>
+            </span>
+          </div>
+          <div id="statTotalFee" class="text-xl sm:text-2xl font-black font-mono text-emerald-400">0 روپے</div>
+        </div>
+
+      </div>
+
+      <!-- Action & Filter Bar -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 card-shadow mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        
+        <!-- Search Input -->
+        <div class="relative w-full md:w-80">
+          <input type="text" id="adminSearchInput" oninput="filterAdmissions()" placeholder="نام، فون، یا شناختی کارڈ سے تلاش کریں..." 
+            class="w-full pl-4 pr-10 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm input-field focus:outline-none bg-slate-50">
+          <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-3 text-slate-400 text-xs"></i>
+        </div>
+
+        <!-- Filters & Export -->
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+          
+          <!-- Category Filter -->
+          <select id="filterCategory" onchange="filterAdmissions()" class="px-3 py-2 rounded-xl border border-slate-200 text-xs input-field bg-slate-50 text-slate-700">
+            <option value="all">تمام طلباء</option>
+            <option value="madrassa">صرف مدرسہ طلباء (50%)</option>
+            <option value="regular">صرف عام طلباء</option>
+          </select>
+
+          <!-- Status Filter -->
+          <select id="filterStatus" onchange="filterAdmissions()" class="px-3 py-2 rounded-xl border border-slate-200 text-xs input-field bg-slate-50 text-slate-700">
+            <option value="all">تمام کیفیات</option>
+            <option value="زیرِ تصدیق">زیرِ تصدیق</option>
+            <option value="منظور شدہ">منظور شدہ</option>
+            <option value="مسترد شدہ">مسترد شدہ</option>
+          </select>
+
+          <!-- Refresh Button -->
+          <button type="button" onclick="loadAdmissions()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs transition-all" title="ریفریش">
+            <i class="fa-solid fa-rotate-right"></i>
+          </button>
+
+          <!-- CSV Export Button -->
+          <button type="button" onclick="exportCsv()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-all shadow-sm">
+            <i class="fa-solid fa-file-excel"></i>
+            <span>Excel / CSV ڈاؤنلوڈ</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Admissions Table -->
+      <div class="bg-white rounded-2xl border border-slate-200 card-shadow overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs sm:text-sm">
+            <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 text-[11px] sm:text-xs">
+              <tr>
+                <th class="py-3 px-4">تصویر</th>
+                <th class="py-3 px-4">رجسٹریشن نمبر</th>
+                <th class="py-3 px-4">طالب علم کا نام</th>
+                <th class="py-3 px-4">شناختی کارڈ</th>
+                <th class="py-3 px-4">موبائل / واٹس ایپ</th>
+                <th class="py-3 px-4">مدرسہ حیثیت</th>
+                <th class="py-3 px-4">فیس / رسید</th>
+                <th class="py-3 px-4">کیفیت (Status)</th>
+                <th class="py-3 px-4 text-center">ایکشن</th>
+              </tr>
+            </thead>
+            <tbody id="admissionsTableBody" class="divide-y divide-slate-100">
+              <!-- Dynamically Populated -->
+              <tr>
+                <td colspan="9" class="py-12 text-center text-slate-400">
+                  <div class="flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-brand-600"></i>
+                    <span>ڈیٹا لوڈ ہو رہا ہے...</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty State Message -->
+        <div id="emptyState" class="hidden py-12 text-center">
+          <i class="fa-regular fa-folder-open text-3xl text-slate-300 mb-2"></i>
+          <p class="text-sm font-semibold text-slate-600">کوئی ریکارڈ موجود نہیں ہے</p>
+          <p class="text-xs text-slate-400 mt-0.5">جب کوئی طالب علم داخلہ فارم جمع کروائے گا تو یہاں ظاہر ہوگا۔</p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- APPLICANT DETAILS MODAL -->
+  <div id="applicantModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-3xl w-full p-6 sm:p-8 card-shadow border border-slate-100 relative my-8 max-h-[90vh] overflow-y-auto">
+      
+      <button type="button" onclick="closeApplicantModal()" class="absolute top-5 left-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm transition-all">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="flex items-center gap-3 pb-4 border-b border-slate-100 mb-6">
+        <div class="w-10 h-10 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-id-badge"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg text-slate-800">طالب علم کی مکمل فائل</h3>
+          <p class="text-xs text-slate-500 font-mono" id="modalRegNo">ADM-2026-0001</p>
+        </div>
+      </div>
+
+      <div id="applicantModalContent" class="space-y-6">
+        <!-- Content injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGE LIGHTBOX MODAL -->
+  <div id="imageLightboxModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-sm p-4" onclick="closeLightbox()">
+    <div class="relative max-w-3xl max-h-[90vh] flex flex-col items-center justify-center" onclick="event.stopPropagation()">
+      <button type="button" onclick="closeLightbox()" class="absolute -top-10 left-0 text-white hover:text-slate-300 text-xl">
+        <i class="fa-solid fa-xmark"></i> بند کریں
+      </button>
+      <img id="lightboxImg" src="" alt="بڑا نظارہ" class="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl border border-slate-700">
+      <div id="lightboxCaption" class="text-white text-xs mt-3 font-semibold"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 card-shadow border border-slate-100 relative my-8">
+      
+      <button type="button" onclick="closeSettingsModal()" class="absolute top-5 left-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm transition-all">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="flex items-center gap-3 pb-4 border-b border-slate-100 mb-6">
+        <div class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-gear"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg text-slate-800">پورٹل و فیس سیٹنگز</h3>
+          <p class="text-xs text-slate-500">کورس کا عنوان، فیس کی رقم اور بینک اکاؤنٹس تبدیل کریں</p>
+        </div>
+      </div>
+
+      <form id="settingsForm" class="space-y-4">
+        <!-- Course Title -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">کورس کا عنوان</label>
+          <input type="text" id="cfgCourseTitle" required class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-slate-50">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Course Fee -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">کورس کی اصل فیس (روپے)</label>
+            <input type="number" id="cfgCourseFee" required class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-slate-50 font-mono text-left dir-ltr">
+          </div>
+
+          <!-- Madrassa Discount % -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">مدرسہ ڈسکاؤنٹ فیصد (%)</label>
+            <input type="number" id="cfgDiscountPercent" required max="100" min="0" class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-slate-50 font-mono text-left dir-ltr">
+          </div>
+        </div>
+
+        <!-- Easypaisa -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="sm:col-span-2 text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> ایزی پیسہ اکاؤنٹ
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-500 mb-1">اکاؤنٹ ٹائٹل</label>
+            <input type="text" id="cfgEpTitle" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white">
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-500 mb-1">اکاؤنٹ نمبر</label>
+            <input type="text" id="cfgEpNum" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white font-mono dir-ltr">
+          </div>
+        </div>
+
+        <!-- JazzCash -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="sm:col-span-2 text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> جاز کیش اکاؤنٹ
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-500 mb-1">اکاؤنٹ ٹائٹل</label>
+            <input type="text" id="cfgJcTitle" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white">
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-500 mb-1">اکاؤنٹ نمبر</label>
+            <input type="text" id="cfgJcNum" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white font-mono dir-ltr">
+          </div>
+        </div>
+
+        <!-- Bank Account -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-3 text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> بینک اکاؤنٹ
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-500 mb-1">بینک کا نام</label>
+            <input type="text" id="cfgBankName" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white">
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-500 mb-1">اکاؤنٹ ٹائٹل</label>
+            <input type="text" id="cfgBankTitle" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white">
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-500 mb-1">اکاؤنٹ نمبر / IBAN</label>
+            <input type="text" id="cfgBankNum" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white font-mono dir-ltr">
+          </div>
+        </div>
+
+        <!-- Admin Password Change -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">نیا ایڈمن پاس ورڈ (اگر تبدیل کرنا چاہیں تو درج کریں)</label>
+          <input type="password" id="cfgNewPassword" placeholder="خالی چھوڑنے پر پرانا پاس ورڈ رہے گا" class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-slate-50 font-mono text-left">
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold">منسوخ کریں</button>
+          <button type="submit" id="saveSettingsBtn" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-md shadow-brand-600/20">سیٹنگز محفوظ کریں</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="adminToast" class="hidden fixed bottom-5 right-5 z-50 bg-slate-900 text-white text-xs sm:text-sm px-4 py-3 rounded-xl shadow-xl flex items-center gap-2">
+    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="adminToastMsg">کامیاب</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/admin.js"></script>
+</body>
+</html>

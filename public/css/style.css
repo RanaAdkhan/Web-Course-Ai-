@@ -1,0 +1,165 @@
+@charset "UTF-8";
+
+/* Jameel Noori Nastaleeq Font Definition */
+@font-face {
+  font-family: 'Jameel Noori Nastaleeq';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Jameel Noori Nastaleeq'),
+       local('Jameel Noori Nastaleeq Regular'),
+       url('/fonts/JameelNooriNastaleeqRegular.woff') format('woff'),
+       url('https://fonts.cdnfonts.com/s/149204/JameelNooriNastaleeqRegular.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Jameel Noori Nastaleeq';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Jameel Noori Nastaleeq'),
+       local('Jameel Noori Nastaleeq Regular'),
+       url('/fonts/JameelNooriNastaleeqRegular.woff') format('woff'),
+       url('https://fonts.cdnfonts.com/s/149204/JameelNooriNastaleeqRegular.woff') format('woff');
+  font-display: swap;
+}
+
+:root {
+  --primary: #059669; /* Emerald 600 */
+  --primary-dark: #047857; /* Emerald 700 */
+  --primary-light: #d1fae5; /* Emerald 100 */
+  --secondary: #1e293b; /* Slate 800 */
+  --accent: #f59e0b; /* Amber 500 */
+  --urdu-font: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Urdu Typesetting', Tahoma, serif;
+}
+
+body {
+  font-family: var(--urdu-font);
+  direction: rtl;
+  text-align: right;
+  background: #f8fafc;
+  color: #1e293b;
+  min-height: 100vh;
+  line-height: 2.1;
+  font-size: 1.05rem;
+}
+
+/* Ensure headings and text maintain comfortable Nastaliq line-height */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--urdu-font);
+  line-height: 2.0;
+}
+
+.urdu-title {
+  font-family: var(--urdu-font);
+  line-height: 2.2;
+}
+
+.urdu-text {
+  font-family: var(--urdu-font);
+}
+
+/* Form Controls with Jameel Noori Nastaleeq */
+input, select, textarea, button, label {
+  font-family: var(--urdu-font);
+}
+
+/* Keep English and numbers clean */
+.font-mono, .font-sans, .dir-ltr {
+  font-family: 'Plus Jakarta Sans', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  line-height: 1.5 !important;
+}
+
+/* Glassmorphism & Cards */
+.card-shadow {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Custom File Upload Box */
+.upload-dropzone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 1rem;
+  background-color: #f8fafc;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.upload-dropzone:hover {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* CNIC and Input Field Style */
+.input-field {
+  transition: all 0.2s ease;
+}
+
+.input-field:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+/* Madrassa Badge Glow */
+.madrassa-discount-box {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 2px solid #34d399;
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+/* Admission Slip Print Styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #admissionSlipModal, #admissionSlipContent, #admissionSlipContent * {
+    visibility: visible;
+  }
+  #admissionSlipModal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "course-admission-portal",
+  "version": "1.0.0",
+  "description": "آن لائن کورس داخلہ فارم اور رجسٹریشن پورٹل مع 50 فیصد مدرسہ ڈسکاؤنٹ",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["course", "admission", "urdu", "registration"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1"
+  }
+}
