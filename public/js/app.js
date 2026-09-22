@@ -181,39 +181,32 @@ function setupCnicFormatter() {
   });
 }
 
-// Calculate fee dynamically (Registration Fee: 1,000 PKR, Remaining divided into monthly installments)
+// Calculate fee dynamically (Full Advance Payment)
 function calculateFee() {
   const isMadrassa = document.getElementById('isMadrassaStudent')?.checked;
   const originalFee = Number(appConfig.courseFee) || 5000;
-  const regFee = Number(appConfig.registrationFee) || 1000;
   const discountPercent = isMadrassa ? (Number(appConfig.madrassaDiscountPercent) || 50) : 0;
   const discountAmount = Math.round((originalFee * discountPercent) / 100);
-  const totalPayable = originalFee - discountAmount;
-  const remainingFee = Math.max(0, totalPayable - regFee);
-  const monthlyInstallment = Math.round(remainingFee / 3);
+  const payableFee = originalFee - discountAmount;
 
   const elOriginal = document.getElementById('displayOriginalFee');
   const elDiscount = document.getElementById('displayDiscount');
-  const elRegFee = document.getElementById('displayRegFee');
-  const elMonthly = document.getElementById('displayMonthlyInstallment');
-  const elRemainingNote = document.getElementById('displayRemainingFeeNote');
+  const elPayable = document.getElementById('displayPayableFee');
   const elDiscountNote = document.getElementById('displayDiscountNote');
 
   if (elOriginal) elOriginal.textContent = `${originalFee.toLocaleString('ur-PK')} روپے`;
   if (elDiscount) {
     if (isMadrassa) {
       elDiscount.textContent = `${discountPercent}% (-${discountAmount.toLocaleString('ur-PK')} روپے)`;
-      elDiscount.className = 'text-lg sm:text-xl font-bold font-mono text-emerald-400 badge-pulse';
-      if (elDiscountNote) elDiscountNote.textContent = `کل فیس اب صرف ${totalPayable.toLocaleString('ur-PK')} روپے ہے`;
+      elDiscount.className = 'text-xl sm:text-2xl font-bold font-mono text-emerald-400 badge-pulse';
+      if (elDiscountNote) elDiscountNote.textContent = 'دینی طلباء کے لیے 50% رعایت لاگو ہے';
     } else {
       elDiscount.textContent = '0% (0 روپے)';
-      elDiscount.className = 'text-lg sm:text-xl font-bold font-mono text-slate-400';
-      if (elDiscountNote) elDiscountNote.textContent = 'دینی طلباء کے لیے 50% معاف';
+      elDiscount.className = 'text-xl sm:text-2xl font-bold font-mono text-slate-400';
+      if (elDiscountNote) elDiscountNote.textContent = 'دینی طلباء کے لیے 50% رعایت';
     }
   }
-  if (elRegFee) elRegFee.textContent = `${regFee.toLocaleString('ur-PK')} روپے`;
-  if (elMonthly) elMonthly.textContent = `${monthlyInstallment.toLocaleString('ur-PK')} روپے / ماہ`;
-  if (elRemainingNote) elRemainingNote.textContent = `باقی رقم: ${remainingFee.toLocaleString('ur-PK')} روپے (3 اقساط)`;
+  if (elPayable) elPayable.textContent = `${payableFee.toLocaleString('ur-PK')} روپے`;
 }
 
 // Image Preview Helper (Safe)
@@ -617,23 +610,19 @@ function showAdmissionSlip(adm) {
 
   const fee = adm.feeDetails || {};
   const originalFee = fee.originalFee || 5000;
-  const regFee = fee.registrationFee || fee.paidFee || 1000;
   const discountPercent = fee.discountPercent || 0;
   const discountAmount = fee.discountAmount || 0;
-  const remainingFee = fee.remainingFee !== undefined ? fee.remainingFee : Math.max(0, (originalFee - discountAmount) - regFee);
-  const monthlyInst = fee.monthlyInstallment || Math.round(remainingFee / 3);
+  const paidFee = fee.paidFee || (originalFee - discountAmount);
 
   const elSlipOrig = document.getElementById('slipOriginalFee');
   const elSlipDisc = document.getElementById('slipDiscount');
   const elSlipPaid = document.getElementById('slipPaidFee');
-  const elSlipInst = document.getElementById('slipInstallments');
   const elSlipLaptop = document.getElementById('slipLaptop');
   const elSlipGemini = document.getElementById('slipGeminiOffer');
 
   if (elSlipOrig) elSlipOrig.textContent = `${originalFee.toLocaleString('ur-PK')} روپے`;
   if (elSlipDisc) elSlipDisc.textContent = `${discountPercent}% (${discountAmount.toLocaleString('ur-PK')} روپے)`;
-  if (elSlipPaid) elSlipPaid.textContent = `${regFee.toLocaleString('ur-PK')} روپے (رجسٹریشن فیس)`;
-  if (elSlipInst) elSlipInst.textContent = `باقی رقم: ${remainingFee.toLocaleString('ur-PK')} روپے (3 اقساط: ~${monthlyInst.toLocaleString('ur-PK')} روپے/ماہ)`;
+  if (elSlipPaid) elSlipPaid.textContent = `${paidFee.toLocaleString('ur-PK')} روپے (مکمل ایڈوانس فیس)`;
   if (elSlipLaptop) {
     elSlipLaptop.innerHTML = adm.hasLaptop !== false
       ? `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-check"></i> جی ہاں، لیپ ٹاپ موجود ہے</span>`
@@ -649,7 +638,7 @@ function showAdmissionSlip(adm) {
   // WhatsApp share link - Directed to 03047809156
   const targetWhatsapp = '03047809156';
   const shareMsg = encodeURIComponent(
-    `السلام علیکم!\nمیں نے آن لائن کورس داخلہ فارم پر کر دیا ہے۔\n\nطالب علم کا نام: ${adm.fullName}\nوالد کا نام: ${adm.fatherName}\nشناختی کارڈ: ${adm.cnic}\nرجسٹریشن نمبر: ${adm.regNo}\nموبائل نمبر: ${adm.phone}\nشہر: ${adm.city}\nکورس دورانیہ: 3 ماہ\nلیپ ٹاپ: ${adm.hasLaptop !== false ? 'موجود ہے' : 'انتظام ہو جائے گا'}\nادا شدہ رجسٹریشن فیس: ${regFee} روپے\nباقی فیس: 3 ماہانہ اقساط میں قابلِ ادائیگی\nٹرانزیکشن آئی ڈی: ${adm.transactionId || '-'}\n\nبرائے مہربانی فیس تصدیق فرما کر مجھے واٹس ایپ کلاس گروپ میں شامل فرما لیں۔`
+    `السلام علیکم!\nمیں نے آن لائن کورس داخلہ فارم پر کر دیا ہے۔\n\nطالب علم کا نام: ${adm.fullName}\nوالد کا نام: ${adm.fatherName}\nشناختی کارڈ: ${adm.cnic}\nرجسٹریشن نمبر: ${adm.regNo}\nموبائل نمبر: ${adm.phone}\nشہر: ${adm.city}\nکورس دورانیہ: 3 ماہ\nلیپ ٹاپ: ${adm.hasLaptop !== false ? 'موجود ہے' : 'انتظام ہو جائے گا'}\nادا شدہ ایڈوانس فیس: ${paidFee} روپے\nٹرانزیکشن آئی ڈی: ${adm.transactionId || '-'}\n\nبرائے مہربانی فیس تصدیق فرما کر مجھے واٹس ایپ کلاس گروپ میں شامل فرما لیں۔`
   );
   const waBtn = document.getElementById('slipWhatsappShare');
   if (waBtn) {

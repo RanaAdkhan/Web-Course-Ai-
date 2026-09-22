@@ -572,7 +572,7 @@ window.viewApplicantDetails = function (id) {
     <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
       <h4 class="font-bold text-sm text-slate-800 mb-3 flex items-center gap-2">
         <i class="fa-solid fa-receipt"></i>
-        <span>فیس اور اقساط کی تفصیلات (کورس دورانیہ: 3 ماہ)</span>
+        <span>فیس کی تفصیلات (مکمل ایڈوانس ادائیگی)</span>
       </h4>
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs mb-4">
@@ -585,12 +585,12 @@ window.viewApplicantDetails = function (id) {
           <span class="font-mono font-bold text-emerald-600">${fee.discountPercent || 0}% (-${fee.discountAmount || 0} روپے)</span>
         </div>
         <div>
-          <span class="text-slate-400 block">رجسٹریشن فیس (ادا شدہ)</span>
-          <span class="font-mono font-bold text-amber-700 text-sm">${fee.paidFee || fee.registrationFee || 1000} روپے</span>
+          <span class="text-slate-400 block">ادا شدہ ایڈوانس رقم</span>
+          <span class="font-mono font-bold text-slate-900 text-sm">${fee.paidFee || 5000} روپے</span>
         </div>
         <div>
-          <span class="text-slate-400 block">باقی فیس اقساط</span>
-          <span class="font-mono font-bold text-cyan-800 text-xs">${fee.remainingFee !== undefined ? fee.remainingFee : (fee.originalFee || 5000) - (fee.paidFee || 1000)} روپے (3 اقساط)</span>
+          <span class="text-slate-400 block">طریقہ / ٹرانزیکشن آئی ڈی</span>
+          <span class="font-mono font-bold text-slate-800">${method} / ${tid}</span>
         </div>
       </div>
 
@@ -780,8 +780,7 @@ window.exportCsv = function () {
     'مدرسہ کلاس',
     'کل کورس فیس',
     'رعایت فیصد',
-    'رجسٹریشن فیس (ادا شدہ)',
-    'باقی فیس اقساط',
+    'ادا شدہ ایڈوانس فیس',
     'ادائیگی کا طریقہ',
     'ٹرانزیکشن آئی ڈی'
   ];
@@ -811,8 +810,7 @@ window.exportCsv = function () {
     escapeCsv(a.madrassaClass || '-'),
     escapeCsv(a.feeDetails ? a.feeDetails.originalFee : '5000'),
     escapeCsv(a.feeDetails ? a.feeDetails.discountPercent + '%' : '0%'),
-    escapeCsv(a.feeDetails ? (a.feeDetails.paidFee || a.feeDetails.registrationFee || 1000) : '1000'),
-    escapeCsv(a.feeDetails && a.feeDetails.remainingFee !== undefined ? `${a.feeDetails.remainingFee} روپے (3 اقساط)` : '4000 روپے'),
+    escapeCsv(a.feeDetails ? a.feeDetails.paidFee : '5000'),
     escapeCsv(a.paymentMethod),
     escapeCsv(a.transactionId || '-')
   ]);

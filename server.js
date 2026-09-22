@@ -304,7 +304,7 @@ app.post('/api/admissions', submissionLimiter, (req, res) => {
       if (!req.files['paymentReceipt']) {
         return res.status(400).json({
           success: false,
-          message: 'رجسٹریشن فیس (1,000 روپے) کی رسید / سکرین شاٹ اپلوڈ کرنا لازمی ہے۔'
+          message: 'فیس ادائیگی کی رسید / سکرین شاٹ اپلوڈ کرنا لازمی ہے۔'
         });
       }
 
@@ -316,15 +316,12 @@ app.post('/api/admissions', submissionLimiter, (req, res) => {
         });
       }
 
-      // Server-side authoritative fee calculation (3 Months Installment System)
+      // Server-side authoritative fee calculation (Full Advance Payment)
       const config = readJson(CONFIG_FILE, {});
       const courseFee = Number(config.courseFee) || 5000;
-      const registrationFee = Number(config.registrationFee) || 1000;
       const discountPercent = isMadrassa ? (Number(config.madrassaDiscountPercent) || 50) : 0;
       const discountAmount = Math.round((courseFee * discountPercent) / 100);
-      const totalPayable = courseFee - discountAmount;
-      const remainingFee = Math.max(0, totalPayable - registrationFee);
-      const monthlyInstallment = Math.round(remainingFee / 3);
+      const payableFee = courseFee - discountAmount;
 
       const admissions = readJson(ADMISSIONS_FILE, []);
       const nextNum = admissions.length + 1;
@@ -357,14 +354,10 @@ app.post('/api/admissions', submissionLimiter, (req, res) => {
         feeDetails: {
           courseDuration: '3 ماہ (3 Months)',
           originalFee: courseFee,
-          registrationFee: registrationFee,
           discountPercent: discountPercent,
           discountAmount: discountAmount,
-          totalPayable: totalPayable,
-          paidFee: registrationFee, // 1000 PKR registration fee paid initially
-          remainingFee: remainingFee,
-          monthlyInstallment: monthlyInstallment,
-          installmentPlan: `باقی رقم 3 ماہانہ اقساط میں (ماہانہ تقریباً ${monthlyInstallment.toLocaleString('ur-PK')} روپے)`
+          paidFee: payableFee,
+          paymentType: 'ایڈوانس مکمل ادائیگی (Full Advance Payment)'
         },
         files: {
           studentPhoto: req.files['studentPhoto'] ? `/uploads/${req.files['studentPhoto'][0].filename}` : null,
