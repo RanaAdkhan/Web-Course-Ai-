@@ -1,6 +1,6 @@
 // Student Admission Form Logic (Professional Edition)
 let appConfig = {
-  courseTitle: "آن لائن اے آئی و انگلش لینگویج کورس (AI & English Course)",
+  courseTitle: "آن لائن اے آئی مع اسپوکن انگلش کورس (Complete AI & English Course)",
   courseDescription: "شاندار مستقبل کی طرف ایک قدم - ویب، ایپ ڈویلپمنٹ، اے آئی ویڈیو ایڈز اور انگلش لینگویج پریکٹیکل کورس (دورانیہ: 3 ماہ | لیپ ٹاپ لازمی | پہلے 5 طلباء کو Gemini Pro فری)",
   courseDuration: "3 ماہ",
   courseFee: 5000,
@@ -12,12 +12,6 @@ let appConfig = {
   paymentAccounts: {
     easypaisa: {
       name: "ایزی پیسہ (Easypaisa)",
-      accountTitle: "Allah Ditta (اللہ دتہ)",
-      accountNumber: "0328-8765822",
-      rawNumber: "03288765822"
-    },
-    jazzcash: {
-      name: "جاز کیش (JazzCash)",
       accountTitle: "Allah Ditta (اللہ دتہ)",
       accountNumber: "0328-8765822",
       rawNumber: "03288765822"
@@ -100,14 +94,6 @@ function updateUiWithConfig() {
       const elNum = document.getElementById('easypaisaNumber');
       if (elTitle) elTitle.textContent = ep.accountTitle || 'Allah Ditta (اللہ دتہ)';
       if (elNum) elNum.textContent = ep.accountNumber || '0328-8765822';
-    }
-
-    const jc = appConfig.paymentAccounts.jazzcash;
-    if (jc) {
-      const elTitle = document.getElementById('jazzcashTitle');
-      const elNum = document.getElementById('jazzcashNumber');
-      if (elTitle) elTitle.textContent = jc.accountTitle || 'Allah Ditta (اللہ دتہ)';
-      if (elNum) elNum.textContent = jc.accountNumber || '0328-8765822';
     }
   }
 
@@ -296,33 +282,58 @@ function playSuccessChime() {
   } catch (e) {}
 }
 
-// Show Prominent Top Alert Notification
-function showTopAlertNotification(data) {
-  playSuccessChime();
-  const bar = document.getElementById('topNotificationBar');
-  const title = document.getElementById('topNotificationTitle');
-  const sub = document.getElementById('topNotificationSubtitle');
-  if (!bar) return;
+// Native Mobile App-Style Top Push Notification System
+let topNotifTimer = null;
 
+window.showTopAppNotification = function({ icon = '🎉', title, body, time = 'ابھی ابھی', playSound = true }) {
+  const notif = document.getElementById('topAppNotification');
+  if (!notif) return;
+
+  if (playSound) {
+    playSuccessChime();
+  }
+
+  const iconEl = document.getElementById('topNotifIcon');
+  const titleEl = document.getElementById('topNotifTitle');
+  const bodyEl = document.getElementById('topNotifBody');
+  const timeEl = document.getElementById('topNotifTime');
+
+  if (iconEl) iconEl.textContent = icon;
+  if (titleEl) titleEl.innerHTML = title;
+  if (bodyEl) bodyEl.innerHTML = body;
+  if (timeEl) timeEl.textContent = time;
+
+  // Slide down from top smoothly
+  notif.classList.remove('-translate-y-40', 'opacity-0', 'pointer-events-none');
+  notif.classList.add('translate-y-0', 'opacity-100');
+
+  if (topNotifTimer) clearTimeout(topNotifTimer);
+  topNotifTimer = setTimeout(() => {
+    window.hideTopAppNotification();
+  }, 6500);
+};
+
+window.hideTopAppNotification = function() {
+  const notif = document.getElementById('topAppNotification');
+  if (!notif) return;
+  notif.classList.remove('translate-y-0', 'opacity-100');
+  notif.classList.add('-translate-y-40', 'opacity-0', 'pointer-events-none');
+};
+
+// Form submission trigger for top alert
+function showTopAlertNotification(data) {
   const name = escapeHtml(data.fullName);
   const regNo = escapeHtml(data.regNo);
-  const paidFee = data.feeDetails ? Number(data.feeDetails.paidFee).toLocaleString('ur-PK') : '2,500';
+  const paidFee = data.feeDetails ? Number(data.feeDetails.paidFee).toLocaleString('ur-PK') : '5,000';
 
-  if (title) {
-    title.innerHTML = `🔔 <b class="text-amber-300 font-black">نیا داخلہ الرٹ!</b> ${name} کی داخلہ درخواست موصول ہو گئی ہے!`;
-  }
-  if (sub) {
-    sub.innerHTML = `رجسٹریشن نمبر: <b class="font-mono bg-white/20 px-2 py-0.5 rounded text-white">${regNo}</b> | ادا شدہ فیس: <b>${paidFee} روپے</b> | واٹس ایپ پر ایڈمن کو رسید بھیج کر سیٹ کنفرم کروائیں۔`;
-  }
-
-  bar.classList.remove('hidden');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.showTopAppNotification({
+    icon: '🎉',
+    title: `<b class="text-amber-300 font-bold">${name}</b> کی داخلہ درخواست موصول ہو گئی!`,
+    body: `رجسٹریشن نمبر: <span class="font-mono bg-white/20 px-1.5 py-0.5 rounded text-white">${regNo}</span> | فیس: <b>${paidFee} روپے</b>`,
+    time: 'ابھی ابھی',
+    playSound: true
+  });
 }
-
-window.closeTopNotification = function() {
-  const bar = document.getElementById('topNotificationBar');
-  if (bar) bar.classList.add('hidden');
-};
 
 // Show alert banner
 function showAlert(message, type = 'error') {
@@ -629,7 +640,7 @@ function showAdmissionSlip(adm) {
 
   // WhatsApp share link - Directed to 03047809156
   const targetWhatsapp = '03047809156';
-  const paymentMethodLabel = adm.paymentMethod === 'jazzcash' ? 'جاز کیش (JazzCash)' : (adm.paymentMethod === 'easypaisa' ? 'ایزی پیسہ (Easypaisa)' : (adm.paymentMethod || 'آن لائن'));
+  const paymentMethodLabel = 'ایزی پیسہ (Easypaisa)';
   const shareMsg = encodeURIComponent(
     `السلام علیکم!\nمیں نے آن لائن داخلہ فارم پر کر دیا ہے۔\n\nکورس: ${adm.selectedCourse || appConfig.courseTitle}\nطالب علم کا نام: ${adm.fullName}\nوالد کا نام: ${adm.fatherName}\nشناختی کارڈ: ${adm.cnic}\nرجسٹریشن نمبر: ${adm.regNo}\nموبائل نمبر: ${adm.phone}\nشہر: ${adm.city}\nکورس دورانیہ: 3 ماہ\nلیپ ٹاپ: ${adm.hasLaptop !== false ? 'موجود ہے' : 'انتظام ہو جائے گا'}\nادا شدہ ایڈوانس فیس: ${paidFee} روپے\nادائیگی کا طریقہ: ${paymentMethodLabel}\nٹرانزیکشن آئی ڈی: ${adm.transactionId || '-'}\n\nبرائے مہربانی فیس تصدیق فرما کر مجھے واٹس ایپ کلاس گروپ میں شامل فرما لیں۔`
   );
@@ -647,31 +658,39 @@ window.closeSlipModal = function () {
   if (modal) modal.classList.add('hidden');
 };
 
-// Live Recent Admissions Ticker (Professional Social Proof)
+// Live Recent Admissions Ticker (App-Style Top Push Notifications)
 function startRecentAdmissionsTicker() {
   const sampleNames = [
-    { name: 'محمد حمزہ', city: 'لاہور', discount: '50% مدرسہ رعایت' },
-    { name: 'عثمان غنی', city: 'فیصل آباد', discount: '50% مدرسہ رعایت' },
-    { name: 'عبدالرحمٰن', city: 'کراچی', discount: '50% مدرسہ رعایت' },
-    { name: 'حافظ بلال', city: 'راولپنڈی', discount: '50% مدرسہ رعایت' },
-    { name: 'محمد یاسین', city: 'ملتان', discount: '50% مدرسہ رعایت' }
+    { name: 'محمد حمزہ', city: 'لاہور', tag: '50% مدرسہ رعایت منظور' },
+    { name: 'عثمان غنی', city: 'فیصل آباد', tag: 'Gemini Pro مفت آفر اہل' },
+    { name: 'عبدالرحمٰن', city: 'کراچی', tag: '50% مدرسہ رعایت منظور' },
+    { name: 'حافظ بلال', city: 'راولپنڈی', tag: 'داخلہ کنفرم ہو گیا' },
+    { name: 'محمد یاسین', city: 'ملتان', tag: '50% مدرسہ رعایت منظور' },
+    { name: 'علی احمد', city: 'گوجرانوالہ', tag: 'Gemini Pro مفت آفر اہل' }
   ];
 
   let index = 0;
-  setInterval(() => {
-    const ticker = document.getElementById('liveTickerToast');
-    if (!ticker) return;
+
+  // Show first notification after 3.5 seconds
+  setTimeout(() => {
+    showNextAdmissionPush();
+    setInterval(showNextAdmissionPush, 13000);
+  }, 3500);
+
+  function showNextAdmissionPush() {
+    // Don't override if user is currently looking at their own admission modal
+    const modal = document.getElementById('admissionSlipModal');
+    if (modal && !modal.classList.contains('hidden')) return;
 
     const student = sampleNames[index % sampleNames.length];
     index++;
 
-    document.getElementById('tickerText').innerHTML = `<b>${student.name}</b> نے ${student.city} سے کورس میں داخلہ لیا (${student.discount})`;
-    ticker.classList.remove('hidden', 'translate-y-10', 'opacity-0');
-    ticker.classList.add('translate-y-0', 'opacity-100');
-
-    setTimeout(() => {
-      ticker.classList.add('translate-y-10', 'opacity-0');
-      setTimeout(() => ticker.classList.add('hidden'), 500);
-    }, 5000);
-  }, 16000);
+    window.showTopAppNotification({
+      icon: '🔔',
+      title: `<b class="text-white">${student.name}</b> <span class="text-slate-300 font-normal">(${student.city})</span>`,
+      body: `نے آن لائن داخلہ لیا! • <span class="text-amber-300 font-semibold">${student.tag}</span>`,
+      time: `${Math.floor(Math.random() * 6) + 2} منٹ پہلے`,
+      playSound: false
+    });
+  }
 }

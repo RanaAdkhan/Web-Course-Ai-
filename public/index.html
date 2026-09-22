@@ -44,30 +44,39 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
 
-  <!-- TOP LIVE NOTIFICATION / ALERT BAR (Displays with chime when someone applies) -->
-  <div id="topNotificationBar" class="hidden fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-700 via-indigo-800 to-blue-900 text-white shadow-2xl py-3 px-4 border-b-2 border-amber-400 transform transition-all duration-300">
-    <div class="max-w-5xl mx-auto flex items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-amber-400 text-slate-900 flex items-center justify-center font-black text-xl shadow-lg shrink-0">
-          🔔
-        </div>
-        <div>
-          <div id="topNotificationTitle" class="font-bold text-sm sm:text-base leading-tight text-white">
-            نیا داخلہ الرٹ! آپ کی داخلہ درخواست کامیابی سے موصول ہو گئی ہے۔
-          </div>
-          <div id="topNotificationSubtitle" class="text-xs text-blue-100 mt-0.5 opacity-90">
-            رجسٹریشن نمبر اور فیس سلپ جاری کر دی گئی ہے، واٹس ایپ پر رابطہ کریں۔
+  <!-- TOP IN-APP PUSH NOTIFICATION BANNER (Native Mobile App Push Style) -->
+  <div id="topAppNotification" class="fixed top-3 sm:top-5 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md pointer-events-none transition-all duration-500 transform -translate-y-40 opacity-0">
+    <div class="bg-slate-950/95 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-3.5 sm:p-4 text-white flex items-center gap-3.5 ring-1 ring-white/10 pointer-events-auto">
+      <!-- App Icon / Celebration -->
+      <div class="relative shrink-0">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 via-emerald-500 to-teal-400 p-0.5 shadow-lg">
+          <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center text-xl">
+            <span id="topNotifIcon">🎉</span>
           </div>
         </div>
+        <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-900 rounded-full animate-ping"></span>
       </div>
-      <div class="flex items-center gap-2 shrink-0">
-        <a href="https://wa.me/923047809156" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white text-blue-900 font-bold text-xs hover:bg-blue-50 transition-all shadow">
-          <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i> 0304-7809156
-        </a>
-        <button type="button" onclick="closeTopNotification()" class="w-8 h-8 rounded-full bg-black/20 hover:bg-black/30 text-white flex items-center justify-center text-sm transition-all" title="بند کریں">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+
+      <!-- Content -->
+      <div class="flex-1 min-w-0 text-right">
+        <div class="flex items-center justify-between text-[11px] text-slate-400 mb-0.5">
+          <span class="font-bold text-amber-400 flex items-center gap-1">
+            <i class="fa-solid fa-bell text-xs"></i> داخلہ الرٹ
+          </span>
+          <span class="font-mono text-[10px] text-slate-400" id="topNotifTime">ابھی ابھی</span>
+        </div>
+        <div id="topNotifTitle" class="font-bold text-sm text-white truncate">
+          نیا داخلہ موصول ہو گیا!
+        </div>
+        <div id="topNotifBody" class="text-xs text-emerald-300 font-medium truncate mt-0.5">
+          طالب علم کا داخلہ فارم کامیابی سے جمع ہو چکا ہے۔
+        </div>
       </div>
+
+      <!-- Close Button -->
+      <button type="button" onclick="hideTopAppNotification()" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 flex items-center justify-center text-xs transition-all shrink-0">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
   </div>
 
@@ -182,19 +191,21 @@
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <!-- Course Selection -->
-            <div class="sm:col-span-2 p-4 rounded-2xl bg-gradient-to-r from-blue-50/80 via-indigo-50/60 to-purple-50/60 border border-blue-200">
-              <label for="selectedCourse" class="block text-sm font-bold text-slate-800 mb-1.5 flex items-center gap-2">
-                <i class="fa-solid fa-graduation-cap text-brand-600"></i>
-                <span>مطلوبہ کورس منتخب کریں (Select Desired Course) <span class="text-rose-500">*</span></span>
-              </label>
-              <select id="selectedCourse" name="selectedCourse" required
-                class="w-full px-4 py-3 rounded-xl border-2 border-brand-500/40 text-sm font-bold text-slate-800 input-field focus:outline-none bg-white shadow-sm">
-                <option value="مکمل کورس: اے آئی مع انگلش لینگویج (AI + English Language)">مکمل کورس: اے آئی مع انگلش لینگویج (AI + English Language Course) - تجویز کردہ</option>
-                <option value="اے آئی کورس: ویب، ایپ ڈویلپمنٹ و ویڈیو ایڈز (AI Practical Course)">اے آئی کورس: ویب، ایپ ڈویلپمنٹ و ویڈیو ایڈز (AI Practical Course)</option>
-                <option value="انگلش کورس: اسپوکن انگلش و پروفیشنل کمیونیکیشن (English Language)">انگلش کورس: اسپوکن انگلش و پروفیشنل کمیونیکیشن (English Language)</option>
-              </select>
-              <span class="text-[11px] text-brand-700 mt-1.5 block font-medium">✨ آپ مکمل کورس یا اپنی مرضی کا کورس منتخب کر سکتے ہیں۔ فیس کی مکمل رعایت سب کے لیے یکساں لاگو ہے۔</span>
+            <!-- Combined All-in-One Course Banner -->
+            <input type="hidden" id="selectedCourse" name="selectedCourse" value="مکمل اے آئی مع اسپوکن انگلش کورس (Complete AI & English Course)">
+            <div class="sm:col-span-2 p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-brand-900 to-indigo-950 text-white border-2 border-brand-500/40 shadow-lg relative overflow-hidden">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                <span class="inline-flex items-center gap-2 text-sm sm:text-base font-bold text-amber-300">
+                  <i class="fa-solid fa-graduation-cap text-lg"></i>
+                  <span>کورس: مکمل اے آئی و اسپوکن انگلش پریکٹیکل کورس</span>
+                </span>
+                <span class="text-[11px] font-bold bg-amber-400 text-slate-950 px-3 py-0.5 rounded-full shadow">
+                  تمام مضامین اکٹھے شامل ہیں (3 ماہ)
+                </span>
+              </div>
+              <p class="text-xs text-blue-100 leading-relaxed">
+                ✨ اس ایک ہی مکمل کورس میں <b>ویب و ایپ ڈویلپمنٹ</b>، <b>اے آئی ویڈیو ایڈز</b> اور <b>اسپوکن انگلش لینگویج</b> تمام ماڈیولز اکٹھے شامل ہیں اور سب کو پریکٹیکل سکھایا جائے گا۔
+              </p>
             </div>
 
             <!-- Full Name -->
@@ -469,48 +480,30 @@
 
           <!-- Payment Accounts Options -->
           <div class="mb-6">
-            <div class="text-xs font-semibold text-slate-500 mb-3">فیس ادائیگی کے منظور شدہ طریقے (ایزی پیسہ یا جاز کیش میں رقم جمع کروائیں):</div>
+            <div class="text-xs font-semibold text-slate-500 mb-3">فیس ادائیگی کا منظور شدہ طریقہ (ایزی پیسہ اکاؤنٹ میں فیس جمع کروائیں):</div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="paymentAccountsContainer">
-              <!-- Dynamically populated or fallback -->
-              
+            <div class="max-w-xl mx-auto" id="paymentAccountsContainer">
               <!-- Easypaisa Card -->
-              <div class="p-4 rounded-2xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50/60 to-white card-shadow relative overflow-hidden">
-                <div class="absolute -left-7 -top-7 w-16 h-16 bg-emerald-500/10 rounded-full"></div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="font-bold text-sm text-emerald-900 flex items-center gap-1.5">
-                    <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-                    ایزی پیسہ (Easypaisa)
+              <div class="p-5 rounded-2xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50/80 via-white to-emerald-50/40 card-shadow relative overflow-hidden">
+                <div class="absolute -left-7 -top-7 w-20 h-20 bg-emerald-500/10 rounded-full"></div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="font-bold text-base text-emerald-900 flex items-center gap-2">
+                    <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                    ایزی پیسہ (Easypaisa) اکاؤنٹ
                   </span>
-                  <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">موبائل اکاؤنٹ</span>
+                  <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-lg">فیس ادائیگی کے لیے</span>
                 </div>
-                <div class="text-xs text-slate-600 mb-1">اکاؤنٹ ٹائٹل: <b class="text-slate-900" id="easypaisaTitle">Allah Ditta (اللہ دتہ)</b></div>
-                <div class="flex items-center justify-between mt-2 pt-2 border-t border-emerald-100">
-                  <div class="text-lg font-bold font-mono text-emerald-800 tracking-wider" id="easypaisaNumber">0328-8765822</div>
-                  <button type="button" onclick="copyText('03288765822')" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-2.5 py-1 rounded-lg transition-all">
-                    <i class="fa-regular fa-copy"></i> کاپی
+                <div class="text-sm text-slate-700 mb-2">اکاؤنٹ ٹائٹل: <b class="text-slate-900 font-bold" id="easypaisaTitle">Allah Ditta (اللہ دتہ)</b></div>
+                <div class="flex items-center justify-between mt-3 pt-3 border-t border-emerald-200">
+                  <div>
+                    <span class="text-[11px] text-slate-500 block">ایزی پیسہ نمبر:</span>
+                    <div class="text-xl sm:text-2xl font-black font-mono text-emerald-800 tracking-wider" id="easypaisaNumber">0328-8765822</div>
+                  </div>
+                  <button type="button" onclick="copyText('03288765822')" class="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl transition-all shadow-md shadow-emerald-600/20 active:scale-95">
+                    <i class="fa-regular fa-copy text-sm"></i> کاپی کریں
                   </button>
                 </div>
               </div>
-
-              <!-- JazzCash Card -->
-              <div class="p-4 rounded-2xl border-2 border-red-400 bg-gradient-to-br from-red-50/50 to-white card-shadow relative overflow-hidden">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="font-bold text-sm text-slate-800 flex items-center gap-1.5">
-                    <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
-                    جاز کیش (JazzCash)
-                  </span>
-                  <span class="text-[10px] font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded-md">موبائل اکاؤنٹ</span>
-                </div>
-                <div class="text-xs text-slate-600 mb-1">اکاؤنٹ ٹائٹل: <b class="text-slate-800" id="jazzcashTitle">Allah Ditta (اللہ دتہ)</b></div>
-                <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
-                  <div class="text-lg font-bold font-mono text-slate-800 tracking-wider" id="jazzcashNumber">0328-8765822</div>
-                  <button type="button" onclick="copyText('03288765822')" class="inline-flex items-center gap-1 text-xs font-bold text-red-700 bg-red-100 hover:bg-red-200 px-2.5 py-1 rounded-lg transition-all">
-                    <i class="fa-regular fa-copy"></i> کاپی
-                  </button>
-                </div>
-              </div>
-
             </div>
           </div>
 
@@ -523,8 +516,7 @@
               </label>
               <select id="paymentMethod" name="paymentMethod" required
                 class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm input-field focus:outline-none bg-white">
-                <option value="easypaisa">ایزی پیسہ (Easypaisa)</option>
-                <option value="jazzcash">جاز کیش (JazzCash)</option>
+                <option value="easypaisa" selected>ایزی پیسہ (Easypaisa) - 0328-8765822</option>
                 <option value="other">دیگر</option>
               </select>
             </div>
@@ -556,7 +548,7 @@
                     <input type="file" id="paymentReceipt" name="paymentReceipt" accept="image/*,.pdf" required class="hidden" onchange="previewImage(this, 'receiptPreviewImg', 'receiptPlaceholder', 'receiptFileName')">
                   </label>
                   <span id="receiptFileName" class="text-xs text-slate-500 font-mono block mt-1">کوئی رسید منتخب نہیں ہوئی</span>
-                  <span class="text-[11px] text-slate-400">ایزی پیسہ یا جاز کیش (0328-8765822) میں ایڈوانس فیس جمع کروا کر رسید کا مکمل سکرین شاٹ اپلوڈ کریں۔</span>
+                  <span class="text-[11px] text-slate-400">ایزی پیسہ اکاؤنٹ (0328-8765822) میں ایڈوانس فیس جمع کروا کر رسید کا مکمل سکرین شاٹ اپلوڈ کریں۔</span>
                 </div>
               </div>
             </div>

@@ -2,17 +2,13 @@
 let allAdmissions = [];
 let currentAdminToken = localStorage.getItem('adminToken') || '';
 let currentConfig = {
-  courseTitle: "آن لائن اے آئی و انگلش لینگویج کورس (AI & English Course)",
+  courseTitle: "آن لائن اے آئی مع اسپوکن انگلش کورس (Complete AI & English Course)",
   courseFee: 5000,
   madrassaDiscountPercent: 50,
   adminPassword: "admin123",
   supportPhone: "0304-7809156",
   paymentAccounts: {
     easypaisa: {
-      accountTitle: "Allah Ditta (اللہ دتہ)",
-      accountNumber: "0328-8765822"
-    },
-    jazzcash: {
       accountTitle: "Allah Ditta (اللہ دتہ)",
       accountNumber: "0328-8765822"
     }
@@ -665,11 +661,6 @@ window.openSettingsModal = function () {
       document.getElementById('cfgEpTitle').value = ep.accountTitle || '';
       document.getElementById('cfgEpNum').value = ep.accountNumber || '';
     }
-    const jc = currentConfig.paymentAccounts.jazzcash;
-    if (jc) {
-      document.getElementById('cfgJcTitle').value = jc.accountTitle || '';
-      document.getElementById('cfgJcNum').value = jc.accountNumber || '';
-    }
   }
 
   document.getElementById('cfgNewPassword').value = '';
@@ -696,9 +687,6 @@ async function handleSaveSettings(e) {
   const epTitle = document.getElementById('cfgEpTitle').value.trim();
   const epNum = document.getElementById('cfgEpNum').value.trim();
 
-  const jcTitle = document.getElementById('cfgJcTitle').value.trim();
-  const jcNum = document.getElementById('cfgJcNum').value.trim();
-
   const payload = {
     courseTitle: title,
     courseFee: fee,
@@ -708,11 +696,6 @@ async function handleSaveSettings(e) {
         name: 'ایزی پیسہ (Easypaisa)',
         accountTitle: epTitle,
         accountNumber: epNum
-      },
-      jazzcash: {
-        name: 'جاز کیش (JazzCash)',
-        accountTitle: jcTitle,
-        accountNumber: jcNum
       }
     }
   };
