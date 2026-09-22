@@ -1,4 +1,4 @@
-// Student Admission Form Logic
+// Student Admission Form Logic (Secured)
 let appConfig = {
   courseTitle: "آن لائن پروفیشنل آئی ٹی و کمپیوٹر کورس",
   courseDescription: "شاندار مستقبل کی طرف ایک قدم - بنیادی سے لے کر ایڈوانس تک مکمل پریکٹیکل کورس",
@@ -25,6 +25,25 @@ let appConfig = {
     }
   }
 };
+
+// Security: XSS Sanitization Helper
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// Security: Safe URL Validator
+function safeUrl(url) {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (trimmed.startsWith('javascript:') || trimmed.startsWith('data:text/html')) return '';
+  return trimmed;
+}
 
 // Check local storage config if available
 try {
@@ -184,7 +203,7 @@ function calculateFee() {
   if (elPayable) elPayable.textContent = `${payableFee.toLocaleString('ur-PK')} روپے`;
 }
 
-// Image Preview Helper
+// Image Preview Helper (Safe)
 window.previewImage = function (input, imgId, placeholderId, nameId) {
   const file = input.files && input.files[0];
   const img = document.getElementById(imgId);
@@ -192,11 +211,18 @@ window.previewImage = function (input, imgId, placeholderId, nameId) {
   const nameLabel = document.getElementById(nameId);
 
   if (file) {
+    // Security: Check file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('سیکیورٹی وارننگ: فائل کا سائز 5MB سے زیادہ نہیں ہونا چاہیے۔');
+      input.value = '';
+      return;
+    }
+
     if (nameLabel) nameLabel.textContent = file.name;
     const reader = new FileReader();
     reader.onload = (e) => {
       if (img) {
-        img.src = e.target.result;
+        img.src = safeUrl(e.target.result);
         img.classList.remove('hidden');
       }
       if (placeholder) {
@@ -215,6 +241,12 @@ window.previewImage = function (input, imgId, placeholderId, nameId) {
 window.previewFileName = function (input, labelId) {
   const file = input.files && input.files[0];
   const label = document.getElementById(labelId);
+  if (file && file.size > 5 * 1024 * 1024) {
+    alert('سیکیورٹی وارننگ: فائل کا سائز 5MB سے زیادہ نہیں ہونا چاہیے۔');
+    input.value = '';
+    if (label) label.textContent = 'کوئی فائل منتخب نہیں ہوئی';
+    return;
+  }
   if (label) {
     label.textContent = file ? file.name : 'کوئی فائل منتخب نہیں ہوئی';
   }
@@ -260,7 +292,7 @@ function showAlert(message, type = 'error') {
   alertEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-// Helper: Convert File to Data URL
+// Helper: Convert File to Data URL safely
 function fileToDataUrl(file) {
   return new Promise((resolve) => {
     if (!file) return resolve(null);
@@ -271,7 +303,7 @@ function fileToDataUrl(file) {
   });
 }
 
-// Handle Form Submit
+// Handle Form Submit with Strict Security Validations
 async function handleFormSubmit(e) {
   e.preventDefault();
 
@@ -280,7 +312,7 @@ async function handleFormSubmit(e) {
   const submitBtnText = document.getElementById('submitBtnText');
   const submitSpinner = document.getElementById('submitSpinner');
 
-  // Basic validations
+  // Basic inputs
   const fullName = document.getElementById('fullName')?.value.trim();
   const fatherName = document.getElementById('fatherName')?.value.trim();
   const cnic = document.getElementById('cnic')?.value.trim();
@@ -304,6 +336,12 @@ async function handleFormSubmit(e) {
     return;
   }
 
+  // Security: Check for dangerous characters
+  if (/[<>]/.test(fullName) || /[<>]/.test(fatherName) || /[<>]/.test(city)) {
+    showAlert('سیکیورٹی وارننگ: نام اور شہر میں غیر قانونی علامات (< >) استعمال نہیں ہو سکتیں۔');
+    return;
+  }
+
   // Validate CNIC (13 digits)
   const cleanCnic = cnic.replace(/\D/g, '');
   if (cleanCnic.length !== 13) {
@@ -311,25 +349,44 @@ async function handleFormSubmit(e) {
     return;
   }
 
-  // Validate Photo
-  if (!studentPhoto) {
-    showAlert('طالب علم کی پاسپورٹ سائز تصویر اپلوڈ کرنا لازمی ہے۔');
+  // Validate Pakistani Phone
+  const cleanPhone = phone.replace(/\D/g, '');
+  if (cleanPhone.length < 10 || cleanPhone.length > 12) {
+    showAlert('برائے مہربانی درست موبائل / واٹس ایپ نمبر درج کریں۔');
     return;
   }
 
-  // Validate Madrassa
+  // File Security Check
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  const ALLOWED_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.pdf'];
+
+  function checkFileSafe(f) {
+    if (!f) return true;
+    if (f.size > MAX_FILE_SIZE) return false;
+    const lower = f.name.toLowerCase();
+    return ALLOWED_EXTS.some((ext) => lower.endsWith(ext));
+  }
+
+  if (!studentPhoto || !checkFileSafe(studentPhoto)) {
+    showAlert('طالب علم کی پاسپورٹ سائز تصویر اپلوڈ کرنا لازمی ہے (زیادہ سے زیادہ سائز 5MB، فارمیٹ: JPG/PNG)۔');
+    return;
+  }
+
   if (isMadrassa && !madrassaName) {
     showAlert('مدرسہ رعایت حاصل کرنے کے لیے جامعہ / مدرسے کا نام درج کرنا لازمی ہے۔');
     return;
   }
 
-  // Validate Receipt
-  if (!paymentReceipt) {
-    showAlert('فیس ادائیگی کی رسید یا سکرین شاٹ اپلوڈ کرنا لازمی ہے۔');
+  if (madrassaCard && !checkFileSafe(madrassaCard)) {
+    showAlert('مدرسہ کارڈ کا سائز 5MB سے زیادہ یا غیر محفوظ فارمیٹ ہے۔');
     return;
   }
 
-  // Validate Declaration
+  if (!paymentReceipt || !checkFileSafe(paymentReceipt)) {
+    showAlert('فیس ادائیگی کی رسید یا سکرین شاٹ اپلوڈ کرنا لازمی ہے (زیادہ سے زیادہ 5MB)۔');
+    return;
+  }
+
   if (!declaration) {
     showAlert('برائے مہربانی اقرار نامے کے چیک باکس کو منتخب کریں۔');
     return;
@@ -346,9 +403,9 @@ async function handleFormSubmit(e) {
   const payableFee = courseFee - discountAmount;
 
   try {
-    // Try sending to Node.js backend if available
     let savedAdmission = null;
 
+    // Try Node.js backend if reachable
     try {
       const formData = new FormData(form);
       const res = await fetch('/api/admissions', {
@@ -360,12 +417,14 @@ async function handleFormSubmit(e) {
         if (data.success && data.admission) {
           savedAdmission = data.admission;
         }
+      } else if (res.status === 429) {
+        const data = await res.json();
+        showAlert(data.message || 'بہت زیادہ درخواستیں بھیجی جا چکی ہیں، کچھ دیر بعد کوشش کریں۔');
+        return;
       }
-    } catch (apiErr) {
-      // Backend not running (e.g. static GitHub Pages)
-    }
+    } catch (apiErr) {}
 
-    // If backend wasn't available, handle on client side
+    // Fallback: Client-side local storage handling for static GitHub Pages
     if (!savedAdmission) {
       const photoBase64 = await fileToDataUrl(studentPhoto);
       const receiptBase64 = await fileToDataUrl(paymentReceipt);
@@ -385,19 +444,19 @@ async function handleFormSubmit(e) {
         submittedAt: new Date().toISOString(),
         status: 'زیرِ تصدیق',
         statusEn: 'pending',
-        fullName,
-        fatherName,
-        cnic,
-        phone,
-        email,
-        city,
-        address,
-        qualification,
+        fullName: fullName.replace(/[<>]/g, ''),
+        fatherName: fatherName.replace(/[<>]/g, ''),
+        cnic: cnic.replace(/[<>]/g, ''),
+        phone: phone.replace(/[<>]/g, ''),
+        email: email.replace(/[<>]/g, ''),
+        city: city.replace(/[<>]/g, ''),
+        address: address.replace(/[<>]/g, ''),
+        qualification: qualification.replace(/[<>]/g, ''),
         isMadrassaStudent: isMadrassa,
-        madrassaName: isMadrassa ? madrassaName : '',
-        madrassaClass: isMadrassa ? madrassaClass : '',
+        madrassaName: isMadrassa ? madrassaName.replace(/[<>]/g, '') : '',
+        madrassaClass: isMadrassa ? madrassaClass.replace(/[<>]/g, '') : '',
         paymentMethod,
-        transactionId,
+        transactionId: transactionId.replace(/[<>]/g, ''),
         feeDetails: {
           originalFee: courseFee,
           discountPercent,
@@ -415,13 +474,12 @@ async function handleFormSubmit(e) {
       try {
         localStorage.setItem('admissions', JSON.stringify(localAdmissions));
       } catch (quotaErr) {
-        // In case localStorage is full with big images, save without large base64
         const lightweight = { ...savedAdmission, files: {} };
         localStorage.setItem('admissions_light', JSON.stringify([lightweight]));
       }
     }
 
-    showAlert('آپ کی داخلہ درخواست کامیابی سے تیار ہو گئی ہے! نیچے دی گئی سلپ محفوظ کریں اور واٹس ایپ پر ایڈمن کو رسید بھیجیں۔', 'success');
+    showAlert('آپ کی داخلہ درخواست کامیابی سے موصول ہو گئی ہے! نیچے دی گئی سلپ محفوظ کریں اور واٹس ایپ پر ایڈمن کو رسید بھیجیں۔', 'success');
     form.reset();
     resetImagePreviews();
     calculateFee();
@@ -439,7 +497,7 @@ async function handleFormSubmit(e) {
   }
 }
 
-// Reset image previews after successful submission
+// Reset image previews
 function resetImagePreviews() {
   const photoImg = document.getElementById('photoPreviewImg');
   const photoPlaceholder = document.getElementById('photoPlaceholder');
@@ -462,31 +520,31 @@ function resetImagePreviews() {
   if (madrassaArea) madrassaArea.classList.add('hidden');
 }
 
-// Display Digital Admission Slip Modal
+// Display Digital Admission Slip Modal (XSS Secured)
 function showAdmissionSlip(adm) {
   const modal = document.getElementById('admissionSlipModal');
   if (!modal) return;
 
   document.getElementById('slipCourseTitle').textContent = appConfig.courseTitle || 'کورس داخلہ تصدیقی سلپ';
-  document.getElementById('slipRegNo').textContent = `رجسٹریشن نمبر: ${adm.regNo}`;
-  document.getElementById('slipStatus').textContent = `حیثیت: ${adm.status}`;
+  document.getElementById('slipRegNo').textContent = `رجسٹریشن نمبر: ${escapeHtml(adm.regNo)}`;
+  document.getElementById('slipStatus').textContent = `حیثیت: ${escapeHtml(adm.status)}`;
 
   if (adm.files && adm.files.studentPhoto) {
-    document.getElementById('slipPhoto').src = adm.files.studentPhoto;
+    document.getElementById('slipPhoto').src = safeUrl(adm.files.studentPhoto);
   }
 
-  document.getElementById('slipName').textContent = adm.fullName;
-  document.getElementById('slipFatherName').textContent = adm.fatherName;
-  document.getElementById('slipCnic').textContent = adm.cnic;
-  document.getElementById('slipPhone').textContent = adm.phone;
-  document.getElementById('slipCityAddress').textContent = `${adm.city} ${adm.address ? ' - ' + adm.address : ''}`;
+  document.getElementById('slipName').textContent = escapeHtml(adm.fullName);
+  document.getElementById('slipFatherName').textContent = escapeHtml(adm.fatherName);
+  document.getElementById('slipCnic').textContent = escapeHtml(adm.cnic);
+  document.getElementById('slipPhone').textContent = escapeHtml(adm.phone);
+  document.getElementById('slipCityAddress').textContent = `${escapeHtml(adm.city)} ${adm.address ? ' - ' + escapeHtml(adm.address) : ''}`;
 
   if (adm.isMadrassaStudent) {
     document.getElementById('slipMadrassaInfo').innerHTML = `
       <span class="inline-flex items-center gap-1 text-emerald-700 font-bold">
         <i class="fa-solid fa-circle-check"></i> دینی مدرسہ طالب علم (50% رعایت منظور)
       </span>
-      <div class="text-[11px] text-slate-500 mt-0.5">${adm.madrassaName || ''} (${adm.madrassaClass || ''})</div>
+      <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(adm.madrassaName)} (${escapeHtml(adm.madrassaClass)})</div>
     `;
   } else {
     document.getElementById('slipMadrassaInfo').textContent = 'عام طالب علم (بغیر رعایت)';
@@ -496,7 +554,7 @@ function showAdmissionSlip(adm) {
   document.getElementById('slipOriginalFee').textContent = `${(fee.originalFee || 5000).toLocaleString('ur-PK')} روپے`;
   document.getElementById('slipDiscount').textContent = `${fee.discountPercent || 0}% (${(fee.discountAmount || 0).toLocaleString('ur-PK')} روپے)`;
   document.getElementById('slipPaidFee').textContent = `${(fee.paidFee || 5000).toLocaleString('ur-PK')} روپے`;
-  document.getElementById('slipTid').textContent = adm.transactionId || 'دستیاب نہیں';
+  document.getElementById('slipTid').textContent = escapeHtml(adm.transactionId || 'دستیاب نہیں');
 
   // WhatsApp share link
   const supportPhone = (appConfig.supportPhone || '03001234567').replace(/\D/g, '');

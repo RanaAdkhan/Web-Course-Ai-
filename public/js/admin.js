@@ -1,4 +1,4 @@
-// Admin Dashboard Logic
+// Admin Dashboard Logic (Secured against XSS & Injection)
 let allAdmissions = [];
 let currentAdminToken = localStorage.getItem('adminToken') || '';
 let currentConfig = {
@@ -28,6 +28,25 @@ try {
   const cached = localStorage.getItem('portal_config');
   if (cached) currentConfig = { ...currentConfig, ...JSON.parse(cached) };
 } catch (e) {}
+
+// Security: XSS Sanitization Helper
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// Security: Safe URL Validator
+function safeUrl(url) {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (trimmed.startsWith('javascript:') || trimmed.startsWith('data:text/html')) return '';
+  return trimmed;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   if (currentAdminToken) {
@@ -81,12 +100,16 @@ async function handleAdminLogin(e) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password })
     });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.success && data.token) {
-        currentAdminToken = data.token;
-        loginSuccess = true;
+    const data = await res.json();
+    if (res.ok && data.success && data.token) {
+      currentAdminToken = data.token;
+      loginSuccess = true;
+    } else if (res.status === 429) {
+      if (errDiv) {
+        errDiv.textContent = data.message || 'بہت زیادہ غلط کوششیں ہو چکی ہیں، کچھ دیر بعد کوشش کریں۔';
+        errDiv.classList.remove('hidden');
       }
+      return;
     }
   } catch (apiErr) {}
 
@@ -213,7 +236,7 @@ window.filterAdmissions = function () {
   renderAdmissionsTable(filtered);
 };
 
-// Render Admissions Table Rows
+// Render Admissions Table Rows with XSS escaping
 function renderAdmissionsTable(list) {
   const tbody = document.getElementById('admissionsTableBody');
   const emptyState = document.getElementById('emptyState');
@@ -227,9 +250,9 @@ function renderAdmissionsTable(list) {
 
   emptyState.classList.add('hidden');
   tbody.innerHTML = list.map((a) => {
-    const photoUrl = (a.files && a.files.studentPhoto) || '';
-    const receiptUrl = (a.files && a.files.paymentReceipt) || '';
-    const cleanPhone = (a.phone || '').replace(/\D/g, '');
+    const photoUrl = safeUrl((a.files && a.files.studentPhoto) || '');
+    const receiptUrl = safeUrl((a.files && a.files.paymentReceipt) || '');
+    const cleanPhone = String(a.phone || '').replace(/\D/g, '');
     const waLink = `https://wa.me/92${cleanPhone.replace(/^0/, '')}`;
 
     let statusBadge = '';
@@ -247,37 +270,45 @@ function renderAdmissionsTable(list) {
          </span>`
       : `<span class="text-[11px] text-slate-400">عام طالب علم</span>`;
 
+    const escapedName = escapeHtml(a.fullName);
+    const escapedFather = escapeHtml(a.fatherName);
+    const escapedCnic = escapeHtml(a.cnic);
+    const escapedPhone = escapeHtml(a.phone);
+    const escapedMadrassaName = escapeHtml(a.madrassaName);
+    const escapedId = escapeHtml(a.id);
+    const escapedRegNo = escapeHtml(a.regNo);
+
     return `
       <tr class="hover:bg-slate-50/80 transition-colors">
         <!-- Photo -->
         <td class="py-3 px-4">
           <div class="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 cursor-pointer shrink-0" 
-               onclick="openLightbox('${photoUrl}', 'طالب علم کی تصویر - ${a.fullName}')">
-            ${photoUrl ? `<img src="${photoUrl}" alt="${a.fullName}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-user text-slate-400 p-2.5"></i>`}
+               onclick="openLightbox('${photoUrl}', 'طالب علم کی تصویر - ${escapedName}')">
+            ${photoUrl ? `<img src="${photoUrl}" alt="${escapedName}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-user text-slate-400 p-2.5"></i>`}
           </div>
         </td>
 
         <!-- Reg No -->
         <td class="py-3 px-4 font-mono font-bold text-slate-700 whitespace-nowrap">
-          ${a.regNo}
+          ${escapedRegNo}
           <div class="text-[10px] text-slate-400 font-sans">${new Date(a.submittedAt).toLocaleDateString('ur-PK')}</div>
         </td>
 
         <!-- Full Name & Father Name -->
         <td class="py-3 px-4">
-          <div class="font-bold text-slate-800">${a.fullName}</div>
-          <div class="text-xs text-slate-500">ولد: ${a.fatherName}</div>
+          <div class="font-bold text-slate-800">${escapedName}</div>
+          <div class="text-xs text-slate-500">ولد: ${escapedFather}</div>
         </td>
 
         <!-- CNIC -->
         <td class="py-3 px-4 font-mono text-slate-700 whitespace-nowrap dir-ltr text-right">
-          ${a.cnic}
+          ${escapedCnic}
         </td>
 
         <!-- Mobile & WhatsApp -->
         <td class="py-3 px-4 whitespace-nowrap">
-          <div class="font-mono text-slate-700 dir-ltr text-right">${a.phone}</div>
-          <a href="${waLink}" target="_blank" class="inline-flex items-center gap-1 text-[11px] text-emerald-600 hover:underline">
+          <div class="font-mono text-slate-700 dir-ltr text-right">${escapedPhone}</div>
+          <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] text-emerald-600 hover:underline">
             <i class="fa-brands fa-whatsapp"></i> واٹس ایپ پیغام
           </a>
         </td>
@@ -285,14 +316,14 @@ function renderAdmissionsTable(list) {
         <!-- Madrassa -->
         <td class="py-3 px-4 whitespace-nowrap">
           ${madrassaBadge}
-          ${a.madrassaName ? `<div class="text-[10px] text-slate-500 truncate max-w-[120px]" title="${a.madrassaName}">${a.madrassaName}</div>` : ''}
+          ${escapedMadrassaName ? `<div class="text-[10px] text-slate-500 truncate max-w-[120px]" title="${escapedMadrassaName}">${escapedMadrassaName}</div>` : ''}
         </td>
 
         <!-- Fee & Receipt -->
         <td class="py-3 px-4 whitespace-nowrap">
-          <div class="font-mono font-bold text-slate-800">${a.feeDetails ? a.feeDetails.paidFee.toLocaleString('ur-PK') : 0} روپے</div>
+          <div class="font-mono font-bold text-slate-800">${a.feeDetails ? Number(a.feeDetails.paidFee).toLocaleString('ur-PK') : 0} روپے</div>
           ${receiptUrl ? `
-            <button type="button" onclick="openLightbox('${receiptUrl}', 'فیس رسید - ${a.fullName}')" 
+            <button type="button" onclick="openLightbox('${receiptUrl}', 'فیس رسید - ${escapedName}')" 
                     class="text-[11px] text-blue-600 hover:underline inline-flex items-center gap-1 mt-0.5">
               <i class="fa-solid fa-receipt"></i> رسید دیکھیں
             </button>
@@ -307,16 +338,16 @@ function renderAdmissionsTable(list) {
         <!-- Actions -->
         <td class="py-3 px-4 text-center whitespace-nowrap">
           <div class="inline-flex items-center gap-1.5">
-            <button type="button" onclick="viewApplicantDetails('${a.id}')" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs transition-all" title="مکمل فائل دیکھیں">
+            <button type="button" onclick="viewApplicantDetails('${escapedId}')" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs transition-all" title="مکمل فائل دیکھیں">
               <i class="fa-solid fa-eye"></i>
             </button>
-            <button type="button" onclick="updateStatus('${a.id}', 'منظور شدہ', 'approved')" class="p-1.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-700 text-xs transition-all" title="منظور کریں">
+            <button type="button" onclick="updateStatus('${escapedId}', 'منظور شدہ', 'approved')" class="p-1.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-700 text-xs transition-all" title="منظور کریں">
               <i class="fa-solid fa-check"></i>
             </button>
-            <button type="button" onclick="updateStatus('${a.id}', 'مسترد شدہ', 'rejected')" class="p-1.5 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs transition-all" title="مسترد کریں">
+            <button type="button" onclick="updateStatus('${escapedId}', 'مسترد شدہ', 'rejected')" class="p-1.5 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs transition-all" title="مسترد کریں">
               <i class="fa-solid fa-xmark"></i>
             </button>
-            <button type="button" onclick="deleteAdmission('${a.id}')" class="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-400 hover:text-rose-600 text-xs transition-all" title="ڈیلیٹ کریں">
+            <button type="button" onclick="deleteAdmission('${escapedId}')" class="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-400 hover:text-rose-600 text-xs transition-all" title="ڈیلیٹ کریں">
               <i class="fa-solid fa-trash"></i>
             </button>
           </div>
@@ -390,7 +421,7 @@ window.deleteAdmission = async function (id) {
   closeApplicantModal();
 };
 
-// View Applicant Full Details Modal
+// View Applicant Full Details Modal (XSS Secured)
 window.viewApplicantDetails = function (id) {
   const adm = allAdmissions.find((a) => a.id === id);
   if (!adm) return;
@@ -399,48 +430,60 @@ window.viewApplicantDetails = function (id) {
   const modalContent = document.getElementById('applicantModalContent');
   document.getElementById('modalRegNo').textContent = `رجسٹریشن نمبر: ${adm.regNo} (${adm.status})`;
 
-  const photoUrl = (adm.files && adm.files.studentPhoto) || '';
-  const receiptUrl = (adm.files && adm.files.paymentReceipt) || '';
-  const madrassaCardUrl = (adm.files && adm.files.madrassaCard) || '';
+  const photoUrl = safeUrl((adm.files && adm.files.studentPhoto) || '');
+  const receiptUrl = safeUrl((adm.files && adm.files.paymentReceipt) || '');
+  const madrassaCardUrl = safeUrl((adm.files && adm.files.madrassaCard) || '');
   const fee = adm.feeDetails || {};
+
+  const name = escapeHtml(adm.fullName);
+  const father = escapeHtml(adm.fatherName);
+  const cnic = escapeHtml(adm.cnic);
+  const phone = escapeHtml(adm.phone);
+  const qual = escapeHtml(adm.qualification || 'ذکر نہیں کیا');
+  const city = escapeHtml(adm.city);
+  const address = escapeHtml(adm.address || '');
+  const madrassaName = escapeHtml(adm.madrassaName || '-');
+  const madrassaClass = escapeHtml(adm.madrassaClass || '-');
+  const method = escapeHtml(adm.paymentMethod || 'easypaisa');
+  const tid = escapeHtml(adm.transactionId || '-');
 
   modalContent.innerHTML = `
     <!-- Top Row: Photo & Main Info -->
     <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-5 rounded-2xl bg-slate-50 border border-slate-200">
       <div class="w-32 h-40 rounded-2xl bg-white border border-slate-200 overflow-hidden shrink-0 shadow-sm cursor-pointer"
-           onclick="openLightbox('${photoUrl}', 'طالب علم: ${adm.fullName}')">
-        ${photoUrl ? `<img src="${photoUrl}" alt="${adm.fullName}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-slate-300"><i class="fa-solid fa-user text-4xl"></i></div>`}
+           onclick="openLightbox('${photoUrl}', 'طالب علم: ${name}')">
+        ${photoUrl ? `<img src="${photoUrl}" alt="${name}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-slate-300"><i class="fa-solid fa-user text-4xl"></i></div>`}
       </div>
 
       <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm w-full">
         <div>
           <span class="text-slate-400 block text-[11px]">طالب علم کا نام</span>
-          <span class="font-bold text-slate-800 text-base">${adm.fullName}</span>
+          <span class="font-bold text-slate-800 text-base">${name}</span>
         </div>
         <div>
           <span class="text-slate-400 block text-[11px]">والد کا نام</span>
-          <span class="font-bold text-slate-800 text-base">${adm.fatherName}</span>
+          <span class="font-bold text-slate-800 text-base">${father}</span>
         </div>
         <div>
           <span class="text-slate-400 block text-[11px]">شناختی کارڈ / ب فارم</span>
-          <span class="font-bold font-mono text-slate-800 text-sm dir-ltr text-right block">${adm.cnic}</span>
+          <span class="font-bold font-mono text-slate-800 text-sm dir-ltr text-right block">${cnic}</span>
         </div>
         <div>
           <span class="text-slate-400 block text-[11px]">موبائل فون / واٹس ایپ</span>
-          <span class="font-bold font-mono text-slate-800 text-sm dir-ltr text-right block">${adm.phone}</span>
+          <span class="font-bold font-mono text-slate-800 text-sm dir-ltr text-right block">${phone}</span>
         </div>
         <div>
           <span class="text-slate-400 block text-[11px]">تعلیمی قابلیت</span>
-          <span class="font-semibold text-slate-700">${adm.qualification || 'ذکر نہیں کیا'}</span>
+          <span class="font-semibold text-slate-700">${qual}</span>
         </div>
         <div>
           <span class="text-slate-400 block text-[11px]">شہر اور پتہ</span>
-          <span class="font-semibold text-slate-700">${adm.city} ${adm.address ? `(${adm.address})` : ''}</span>
+          <span class="font-semibold text-slate-700">${city} ${address ? `(${address})` : ''}</span>
         </div>
       </div>
     </div>
 
-    <!-- Madrassa Discount Section (if applicable) -->
+    <!-- Madrassa Discount Section -->
     <div class="p-4 rounded-2xl ${adm.isMadrassaStudent ? 'bg-teal-50 border border-teal-200' : 'bg-slate-50 border border-slate-200'}">
       <div class="flex items-center justify-between mb-3">
         <h4 class="font-bold text-sm ${adm.isMadrassaStudent ? 'text-teal-900' : 'text-slate-700'} flex items-center gap-2">
@@ -453,11 +496,11 @@ window.viewApplicantDetails = function (id) {
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           <div>
             <span class="text-slate-500 block">جامعہ / مدرسے کا نام:</span>
-            <span class="font-bold text-slate-800">${adm.madrassaName || '-'}</span>
+            <span class="font-bold text-slate-800">${madrassaName}</span>
           </div>
           <div>
             <span class="text-slate-500 block">درجہ / کلاس:</span>
-            <span class="font-bold text-slate-800">${adm.madrassaClass || '-'}</span>
+            <span class="font-bold text-slate-800">${madrassaClass}</span>
           </div>
         </div>
 
@@ -466,7 +509,7 @@ window.viewApplicantDetails = function (id) {
           <span class="text-xs font-semibold text-teal-900 block mb-2">مدرسہ تصدیقی کارڈ / خط:</span>
           ${madrassaCardUrl ? `
             <div class="inline-block p-1 bg-white border border-teal-300 rounded-xl cursor-pointer hover:shadow-md transition-all"
-                 onclick="openLightbox('${madrassaCardUrl}', 'مدرسہ کارڈ - ${adm.fullName}')">
+                 onclick="openLightbox('${madrassaCardUrl}', 'مدرسہ کارڈ - ${name}')">
               <img src="${madrassaCardUrl}" alt="مدرسہ کارڈ" class="h-20 w-32 object-cover rounded-lg">
               <span class="text-[10px] text-teal-700 text-center block mt-1"><i class="fa-solid fa-magnifying-glass"></i> بڑا کر کے دیکھیں</span>
             </div>
@@ -497,7 +540,7 @@ window.viewApplicantDetails = function (id) {
         </div>
         <div>
           <span class="text-slate-400 block">طریقہ / ٹرانزیکشن آئی ڈی</span>
-          <span class="font-mono font-bold text-slate-800">${adm.paymentMethod} / ${adm.transactionId || '-'}</span>
+          <span class="font-mono font-bold text-slate-800">${method} / ${tid}</span>
         </div>
       </div>
 
@@ -506,7 +549,7 @@ window.viewApplicantDetails = function (id) {
         <span class="text-xs font-semibold text-slate-700 block mb-2">فیس ادائیگی کی رسید کا سکرین شاٹ:</span>
         ${receiptUrl ? `
           <div class="inline-block p-1 bg-white border border-slate-300 rounded-xl cursor-pointer hover:shadow-md transition-all"
-               onclick="openLightbox('${receiptUrl}', 'فیس رسید سکرین شاٹ - ${adm.fullName}')">
+               onclick="openLightbox('${receiptUrl}', 'فیس رسید سکرین شاٹ - ${name}')">
             <img src="${receiptUrl}" alt="فیس رسید" class="h-28 w-44 object-cover rounded-lg">
             <span class="text-[10px] text-blue-600 text-center block mt-1"><i class="fa-solid fa-magnifying-glass"></i> رسید بڑا کر کے دیکھیں</span>
           </div>
@@ -550,7 +593,7 @@ window.openLightbox = function (src, caption) {
   const modal = document.getElementById('imageLightboxModal');
   const img = document.getElementById('lightboxImg');
   const cap = document.getElementById('lightboxCaption');
-  img.src = src;
+  img.src = safeUrl(src);
   cap.textContent = caption || '';
   modal.classList.remove('hidden');
 };
@@ -600,6 +643,11 @@ async function handleSaveSettings(e) {
   const fee = Number(document.getElementById('cfgCourseFee').value);
   const discount = Number(document.getElementById('cfgDiscountPercent').value);
   const newPass = document.getElementById('cfgNewPassword').value.trim();
+
+  if (newPass && newPass.length < 6) {
+    alert('سیکیورٹی وارننگ: پاس ورڈ کم از کم 6 حروف پر مشتمل ہونا چاہیے۔');
+    return;
+  }
 
   const epTitle = document.getElementById('cfgEpTitle').value.trim();
   const epNum = document.getElementById('cfgEpNum').value.trim();

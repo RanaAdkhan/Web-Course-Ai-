@@ -3,9 +3,23 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Security: Disable Express fingerprinting
+app.disable('x-powered-by');
+
+// Security Headers Middleware
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
 
 // Ensure directories exist
 const DATA_DIR = path.join(__dirname, 'data');
@@ -39,106 +53,199 @@ function writeJson(filePath, data) {
   }
 }
 
-// Multer storage configuration
+// Input Sanitization Helper to prevent XSS
+function sanitizeInput(str, maxLen = 250) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/[<>]/g, '') // strip dangerous tags
+    .trim()
+    .substring(0, maxLen);
+}
+
+// Rate Limiter Memory Store
+const rateLimitMap = new Map();
+
+function createRateLimiter(maxAttempts, windowMs, message) {
+  return (req, res, next) => {
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const now = Date.now();
+    const clientRecord = rateLimitMap.get(ip) || { count: 0, firstAttempt: now, blockedUntil: 0 };
+
+    if (clientRecord.blockedUntil > now) {
+      const waitSeconds = Math.ceil((clientRecord.blockedUntil - now) / 1000);
+      return res.status(429).json({
+        success: false,
+        message: `${message} برائے مہربانی ${waitSeconds} سیکنڈ بعد دوبارہ کوشش کریں۔`
+      });
+    }
+
+    if (now - clientRecord.firstAttempt > windowMs) {
+      clientRecord.count = 0;
+      clientRecord.firstAttempt = now;
+    }
+
+    clientRecord.count += 1;
+
+    if (clientRecord.count > maxAttempts) {
+      clientRecord.blockedUntil = now + windowMs;
+      rateLimitMap.set(ip, clientRecord);
+      return res.status(429).json({
+        success: false,
+        message: `${message} سیکیورٹی کی خاطر عارضی طور پر بلاک کر دیا گیا ہے۔`
+      });
+    }
+
+    rateLimitMap.set(ip, clientRecord);
+    next();
+  };
+}
+
+// Rate limiters
+const loginLimiter = createRateLimiter(5, 15 * 60 * 1000, 'بہت زیادہ لاگ اِن کی غلط کوششیں کی گئی ہیں!');
+const submissionLimiter = createRateLimiter(15, 60 * 60 * 1000, 'بہت زیادہ درخواستیں بھیجی جا چکی ہیں!');
+
+// Multer storage with cryptographically secure random filenames
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, UPLOADS_DIR);
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname).toLowerCase();
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e6);
-    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+    const safeRandom = crypto.randomBytes(16).toString('hex');
+    cb(null, `${file.fieldname}-${Date.now()}-${safeRandom}${ext}`);
   }
 });
 
-// File filter (images and pdfs)
+// Strict MIME & extension file filter
+const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.pdf'];
+
 const fileFilter = (req, file, cb) => {
-  const allowed = ['.jpg', '.jpeg', '.png', '.webp', '.pdf'];
   const ext = path.extname(file.originalname).toLowerCase();
-  if (allowed.includes(ext)) {
+  const mime = file.mimetype.toLowerCase();
+
+  if (allowedExtensions.includes(ext) && allowedMimeTypes.includes(mime)) {
     cb(null, true);
   } else {
-    cb(new Error('صرف تصویر (JPG, PNG, WEBP) یا PDF فائل اپلوڈ کی جا سکتی ہے۔'), false);
+    cb(new Error('سیکیورٹی وارننگ: صرف محفوظ تصاویر (JPG, PNG, WEBP) یا PDF فائل اپلوڈ کی جا سکتی ہے۔'), false);
   }
 };
 
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
-app.use('/uploads', express.static(UPLOADS_DIR));
 
-// Simple admin session management
-const activeTokens = new Set();
+// Serve uploads with safe download/inline headers
+app.use('/uploads', (req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Content-Security-Policy', "default-src 'self'");
+  next();
+}, express.static(UPLOADS_DIR));
+
+// Cryptographically secure token store with expiration (24 hours)
+const activeTokens = new Map();
+
+function generateSecureToken() {
+  return crypto.randomBytes(32).toString('hex');
+}
 
 function verifyAdmin(req, res, next) {
   const authHeader = req.headers['authorization'];
   if (!authHeader) {
     return res.status(401).json({ success: false, message: 'ایڈمن لاگ اِن درکار ہے' });
   }
+
   const token = authHeader.replace(/^Bearer\s+/, '').trim();
-  if (activeTokens.has(token)) {
+  const tokenData = activeTokens.get(token);
+
+  if (tokenData && tokenData.expiresAt > Date.now()) {
     return next();
   }
-  return res.status(403).json({ success: false, message: 'غیر معتبر سیشن یا ٹوکن' });
+
+  // Token expired or invalid
+  if (tokenData) activeTokens.delete(token);
+  return res.status(403).json({ success: false, message: 'لاگ اِن سیشن ختم ہو چکا ہے، براہ کرم دوبارہ لاگ اِن کریں۔' });
 }
 
 // Routes
 
-// 1. Get Public Config
+// 1. Get Public Config (Sensitive details never exposed)
 app.get('/api/config', (req, res) => {
   const config = readJson(CONFIG_FILE, {});
   const { adminPassword, ...publicConfig } = config;
   res.json({ success: true, config: publicConfig });
 });
 
-// 2. Admin Login
-app.post('/api/admin/login', (req, res) => {
+// 2. Admin Login (With Rate Limiting & Timing Attack Protection)
+app.post('/api/admin/login', loginLimiter, (req, res) => {
   const { password } = req.body;
   const config = readJson(CONFIG_FILE, {});
   const expectedPassword = config.adminPassword || 'admin123';
 
-  if (password === expectedPassword) {
-    const token = 'token_' + Date.now() + '_' + Math.random().toString(36).substring(2);
-    activeTokens.add(token);
+  if (typeof password !== 'string') {
+    return res.status(400).json({ success: false, message: 'درست پاس ورڈ درج کریں' });
+  }
+
+  // Timing safe comparison to prevent timing attacks
+  const inputBuffer = Buffer.from(password);
+  const targetBuffer = Buffer.from(expectedPassword);
+
+  let isMatch = false;
+  if (inputBuffer.length === targetBuffer.length) {
+    isMatch = crypto.timingSafeEqual(inputBuffer, targetBuffer);
+  }
+
+  if (isMatch) {
+    const token = generateSecureToken();
+    const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    activeTokens.set(token, { expiresAt });
     return res.json({ success: true, token, message: 'لاگ اِن کامیاب!' });
   }
+
   return res.status(401).json({ success: false, message: 'پاس ورڈ درست نہیں ہے۔' });
 });
 
 // 3. Admin Update Config
 app.post('/api/config', verifyAdmin, (req, res) => {
   const currentConfig = readJson(CONFIG_FILE, {});
+  const { courseTitle, courseFee, madrassaDiscountPercent, paymentAccounts, adminPassword } = req.body;
+
   const updated = {
     ...currentConfig,
-    ...req.body
+    courseTitle: sanitizeInput(courseTitle, 100) || currentConfig.courseTitle,
+    courseFee: Number(courseFee) || currentConfig.courseFee,
+    madrassaDiscountPercent: Math.min(100, Math.max(0, Number(madrassaDiscountPercent) || 50)),
+    paymentAccounts: paymentAccounts || currentConfig.paymentAccounts
   };
-  // Don't overwrite password if blank
-  if (!req.body.adminPassword) {
-    updated.adminPassword = currentConfig.adminPassword;
+
+  if (adminPassword && typeof adminPassword === 'string' && adminPassword.trim().length >= 6) {
+    updated.adminPassword = adminPassword.trim();
   }
+
   writeJson(CONFIG_FILE, updated);
   res.json({ success: true, message: 'سیٹنگز کامیابی سے محفوظ ہو گئیں!' });
 });
 
-// 4. Submit Admission Form
+// 4. Submit Admission Form (With Rate Limiter & File Validation)
 const uploadFields = upload.fields([
   { name: 'studentPhoto', maxCount: 1 },
   { name: 'madrassaCard', maxCount: 1 },
   { name: 'paymentReceipt', maxCount: 1 }
 ]);
 
-app.post('/api/admissions', (req, res) => {
+app.post('/api/admissions', submissionLimiter, (req, res) => {
   uploadFields(req, res, (err) => {
     if (err) {
-      return res.status(400).json({ success: false, message: err.message || 'فائل اپلوڈ کرنے میں خرابی پیش آئی۔' });
+      return res.status(400).json({ success: false, message: err.message || 'فائل اپلوڈ کرنے میں سیکیورٹی یا سائز کی خرابی پیش آئی۔' });
     }
 
     try {
@@ -159,7 +266,7 @@ app.post('/api/admissions', (req, res) => {
         notes
       } = req.body;
 
-      // Validation
+      // Required fields validation
       if (!fullName || !fatherName || !cnic || !phone || !city) {
         return res.status(400).json({
           success: false,
@@ -167,6 +274,25 @@ app.post('/api/admissions', (req, res) => {
         });
       }
 
+      // CNIC Validation: 13 digits
+      const cleanCnic = String(cnic).replace(/\D/g, '');
+      if (cleanCnic.length !== 13) {
+        return res.status(400).json({
+          success: false,
+          message: 'شناختی کارڈ یا ب فارم نمبر 13 ہندسوں پر مشتمل ہونا لازمی ہے۔'
+        });
+      }
+
+      // Phone Validation: Pakistani mobile format
+      const cleanPhone = String(phone).replace(/\D/g, '');
+      if (cleanPhone.length < 10 || cleanPhone.length > 12) {
+        return res.status(400).json({
+          success: false,
+          message: 'برائے مہربانی درست پاکستانی موبائل / واٹس ایپ نمبر درج کریں۔'
+        });
+      }
+
+      // Mandatory Photo & Receipt
       if (!req.files || !req.files['studentPhoto']) {
         return res.status(400).json({
           success: false,
@@ -189,6 +315,7 @@ app.post('/api/admissions', (req, res) => {
         });
       }
 
+      // Server-side authoritative fee calculation (cannot be tampered by client)
       const config = readJson(CONFIG_FILE, {});
       const courseFee = Number(config.courseFee) || 5000;
       const discountPercent = isMadrassa ? (Number(config.madrassaDiscountPercent) || 50) : 0;
@@ -198,28 +325,28 @@ app.post('/api/admissions', (req, res) => {
       const admissions = readJson(ADMISSIONS_FILE, []);
       const nextNum = admissions.length + 1;
       const regNo = `ADM-${new Date().getFullYear()}-${String(nextNum).padStart(4, '0')}`;
-      const id = `adm_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      const id = `adm_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
 
       const newAdmission = {
         id,
         regNo,
         submittedAt: new Date().toISOString(),
-        status: 'زیرِ تصدیق', // Pending
+        status: 'زیرِ تصدیق',
         statusEn: 'pending',
-        fullName: fullName.trim(),
-        fatherName: fatherName.trim(),
-        cnic: cnic.trim(),
-        phone: phone.trim(),
-        email: email ? email.trim() : '',
-        city: city.trim(),
-        address: address ? address.trim() : '',
-        qualification: qualification ? qualification.trim() : '',
+        fullName: sanitizeInput(fullName, 70),
+        fatherName: sanitizeInput(fatherName, 70),
+        cnic: sanitizeInput(cnic, 20),
+        phone: sanitizeInput(phone, 20),
+        email: sanitizeInput(email, 100),
+        city: sanitizeInput(city, 50),
+        address: sanitizeInput(address, 200),
+        qualification: sanitizeInput(qualification, 50),
         isMadrassaStudent: isMadrassa,
-        madrassaName: isMadrassa ? (madrassaName ? madrassaName.trim() : '') : '',
-        madrassaClass: isMadrassa ? (madrassaClass ? madrassaClass.trim() : '') : '',
-        paymentMethod: paymentMethod || 'easypaisa',
-        transactionId: transactionId ? transactionId.trim() : '',
-        notes: notes ? notes.trim() : '',
+        madrassaName: isMadrassa ? sanitizeInput(madrassaName, 100) : '',
+        madrassaClass: isMadrassa ? sanitizeInput(madrassaClass, 50) : '',
+        paymentMethod: sanitizeInput(paymentMethod, 30) || 'easypaisa',
+        transactionId: sanitizeInput(transactionId, 50),
+        notes: sanitizeInput(notes, 300),
         feeDetails: {
           originalFee: courseFee,
           discountPercent: discountPercent,
@@ -248,23 +375,24 @@ app.post('/api/admissions', (req, res) => {
   });
 });
 
-// 5. Lookup admission slip by regNo
+// 5. Lookup admission slip by regNo (Sanitized)
 app.get('/api/admissions/slip/:regNo', (req, res) => {
+  const regNoParam = sanitizeInput(req.params.regNo, 30).toLowerCase();
   const admissions = readJson(ADMISSIONS_FILE, []);
-  const found = admissions.find((a) => a.regNo.toLowerCase() === req.params.regNo.toLowerCase());
+  const found = admissions.find((a) => a.regNo.toLowerCase() === regNoParam);
   if (!found) {
     return res.status(404).json({ success: false, message: 'داخلہ نمبر نہیں ملا۔' });
   }
   res.json({ success: true, admission: found });
 });
 
-// 6. Get All Admissions (Admin)
+// 6. Get All Admissions (Admin only)
 app.get('/api/admissions', verifyAdmin, (req, res) => {
   const admissions = readJson(ADMISSIONS_FILE, []);
   res.json({ success: true, admissions });
 });
 
-// 7. Update Admission Status (Admin)
+// 7. Update Admission Status (Admin only)
 app.patch('/api/admissions/:id/status', verifyAdmin, (req, res) => {
   const { id } = req.params;
   const { status, statusEn } = req.body;
@@ -275,15 +403,15 @@ app.patch('/api/admissions/:id/status', verifyAdmin, (req, res) => {
     return res.status(404).json({ success: false, message: 'ریکارڈ نہیں ملا۔' });
   }
 
-  admissions[idx].status = status || admissions[idx].status;
-  admissions[idx].statusEn = statusEn || admissions[idx].statusEn;
+  admissions[idx].status = sanitizeInput(status, 30) || admissions[idx].status;
+  admissions[idx].statusEn = sanitizeInput(statusEn, 30) || admissions[idx].statusEn;
   admissions[idx].updatedAt = new Date().toISOString();
 
   writeJson(ADMISSIONS_FILE, admissions);
   res.json({ success: true, message: 'حیثیت کامیابی سے تبدیل ہو گئی!', admission: admissions[idx] });
 });
 
-// 8. Delete Admission (Admin)
+// 8. Delete Admission (Admin only)
 app.delete('/api/admissions/:id', verifyAdmin, (req, res) => {
   const { id } = req.params;
   const admissions = readJson(ADMISSIONS_FILE, []);
@@ -293,11 +421,12 @@ app.delete('/api/admissions/:id', verifyAdmin, (req, res) => {
     return res.status(404).json({ success: false, message: 'ریکارڈ نہیں ملا۔' });
   }
 
-  // Optionally delete files
+  // Delete associated files safely
   if (itemToDelete.files) {
     Object.values(itemToDelete.files).forEach((filePath) => {
-      if (filePath) {
-        const fullPath = path.join(__dirname, filePath);
+      if (filePath && typeof filePath === 'string') {
+        const safeFilename = path.basename(filePath);
+        const fullPath = path.join(UPLOADS_DIR, safeFilename);
         if (fs.existsSync(fullPath)) {
           try {
             fs.unlinkSync(fullPath);
@@ -313,11 +442,10 @@ app.delete('/api/admissions/:id', verifyAdmin, (req, res) => {
   res.json({ success: true, message: 'ریکارڈ حذف کر دیا گیا ہے۔' });
 });
 
-// 9. Export Admissions as CSV (Admin)
+// 9. Export Admissions as CSV (Admin only, UTF-8 BOM with sanitization)
 app.get('/api/admissions/export-csv', verifyAdmin, (req, res) => {
   const admissions = readJson(ADMISSIONS_FILE, []);
 
-  // CSV Headers in Urdu
   const headers = [
     'رجسٹریشن نمبر',
     'تاریخ',
@@ -368,7 +496,6 @@ app.get('/api/admissions/export-csv', verifyAdmin, (req, res) => {
     escapeCsv(a.transactionId || '-')
   ]);
 
-  // UTF-8 BOM so Excel opens Urdu properly
   const bom = '\uFEFF';
   const csvContent = bom + [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
 
@@ -379,15 +506,15 @@ app.get('/api/admissions/export-csv', verifyAdmin, (req, res) => {
 
 // Fallback to index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Start server
 app.listen(PORT, () => {
   console.log(`====================================================`);
-  console.log(`🚀 کورس داخلہ پورٹل کامیابی سے آن لائن ہو گیا ہے!`);
+  console.log(`🛡️ محفوظ کورس داخلہ پورٹل کامیابی سے آن لائن ہو گیا ہے!`);
   console.log(`🌐 طالب علم فارم لنک: http://localhost:${PORT}`);
   console.log(`🛡️ ایڈمن پینل لنک:   http://localhost:${PORT}/admin.html`);
-  console.log(`🔑 ڈیفالٹ ایڈمن پاس ورڈ: admin123`);
+  console.log(`🔒 تمام سیکیورٹی فیچرز، ریٹ لمٹنگ اور ہیڈرز فعال ہیں۔`);
   console.log(`====================================================`);
 });
