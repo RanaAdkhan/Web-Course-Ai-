@@ -1,9 +1,13 @@
 // Student Admission Form Logic (Professional Edition)
 let appConfig = {
-  courseTitle: "آن لائن پروفیشنل آئی ٹی و کمپیوٹر کورس",
-  courseDescription: "شاندار مستقبل کی طرف ایک قدم - بنیادی سے لے کر ایڈوانس تک مکمل پریکٹیکل کورس",
+  courseTitle: "آن لائن پروفیشنل اے آئی کورس (AI Course)",
+  courseDescription: "شاندار مستقبل کی طرف ایک قدم - ویب، ایپ ڈویلپمنٹ اور اے آئی ویڈیو ایڈز پریکٹیکل کورس (دورانیہ: 3 ماہ | لیپ ٹاپ لازمی | پہلے 5 طلباء کو Gemini Pro فری)",
+  courseDuration: "3 ماہ",
   courseFee: 5000,
+  registrationFee: 1000,
   madrassaDiscountPercent: 50,
+  requiresLaptop: true,
+  specialOffer: "پہلے 5 سٹوڈنٹس کو جیمینائی پرو (Gemini Pro) بالکل مفت دیا جائے گا!",
   supportPhone: "0304-7809156",
   whatsappNumber: "03047809156",
   paymentAccounts: {
@@ -118,9 +122,9 @@ function updateUiWithConfig() {
       const elBankName = document.getElementById('bankName');
       const elTitle = document.getElementById('bankTitle');
       const elNum = document.getElementById('bankNumber');
-      if (elBankName) elBankName.textContent = bk.bankName || 'بینک اکاؤنٹ';
+      if (elBankName) elBankName.textContent = bk.bankName || 'Meezan Bank Limited';
       if (elTitle) elTitle.textContent = bk.accountTitle || 'Allah Ditta';
-      if (elNum) elNum.textContent = `A/C: ${bk.accountNumber}`;
+      if (elNum) elNum.textContent = `A/C: ${bk.accountNumber || '01010102030405'}`;
     }
   }
 
@@ -130,42 +134,39 @@ function updateUiWithConfig() {
 
 // Setup Event Listeners
 function setupEventListeners() {
-  const madrassaToggle = document.getElementById('isMadrassaStudent');
-  const madrassaArea = document.getElementById('madrassaFieldsArea');
-  const madrassaNameInput = document.getElementById('madrassaName');
-  const madrassaClassInput = document.getElementById('madrassaClass');
-
-  if (madrassaToggle) {
-    madrassaToggle.addEventListener('change', () => {
-      const isChecked = madrassaToggle.checked;
-      if (isChecked) {
-        madrassaArea.classList.remove('hidden');
-        madrassaNameInput.setAttribute('required', 'true');
-        madrassaClassInput.setAttribute('required', 'true');
-      } else {
-        madrassaArea.classList.add('hidden');
-        madrassaNameInput.removeAttribute('required');
-        madrassaClassInput.removeAttribute('required');
-      }
-      calculateFee();
-    });
-  }
-
   const form = document.getElementById('admissionForm');
   if (form) {
     form.addEventListener('submit', handleFormSubmit);
   }
+
+  const madrassaCheckbox = document.getElementById('isMadrassaStudent');
+  if (madrassaCheckbox) {
+    madrassaCheckbox.addEventListener('change', function () {
+      const area = document.getElementById('madrassaFieldsArea');
+      const madrassaName = document.getElementById('madrassaName');
+      const madrassaClass = document.getElementById('madrassaClass');
+
+      if (this.checked) {
+        if (area) area.classList.remove('hidden');
+        if (madrassaName) madrassaName.setAttribute('required', 'required');
+        if (madrassaClass) madrassaClass.setAttribute('required', 'required');
+      } else {
+        if (area) area.classList.add('hidden');
+        if (madrassaName) madrassaName.removeAttribute('required');
+        if (madrassaClass) madrassaClass.removeAttribute('required');
+      }
+      calculateFee();
+    });
+  }
 }
 
-// CNIC Auto Formatter (XXXXX-XXXXXXX-X)
+// CNIC auto-formatter (12345-1234567-1)
 function setupCnicFormatter() {
   const cnicInput = document.getElementById('cnic');
   if (!cnicInput) return;
 
   cnicInput.addEventListener('input', (e) => {
     let val = e.target.value.replace(/\D/g, '');
-    if (val.length > 13) val = val.substring(0, 13);
-
     let formatted = '';
     if (val.length > 0) {
       formatted += val.substring(0, Math.min(5, val.length));
@@ -180,29 +181,39 @@ function setupCnicFormatter() {
   });
 }
 
-// Calculate fee dynamically
+// Calculate fee dynamically (Registration Fee: 1,000 PKR, Remaining divided into monthly installments)
 function calculateFee() {
   const isMadrassa = document.getElementById('isMadrassaStudent')?.checked;
   const originalFee = Number(appConfig.courseFee) || 5000;
+  const regFee = Number(appConfig.registrationFee) || 1000;
   const discountPercent = isMadrassa ? (Number(appConfig.madrassaDiscountPercent) || 50) : 0;
   const discountAmount = Math.round((originalFee * discountPercent) / 100);
-  const payableFee = originalFee - discountAmount;
+  const totalPayable = originalFee - discountAmount;
+  const remainingFee = Math.max(0, totalPayable - regFee);
+  const monthlyInstallment = Math.round(remainingFee / 3);
 
   const elOriginal = document.getElementById('displayOriginalFee');
   const elDiscount = document.getElementById('displayDiscount');
-  const elPayable = document.getElementById('displayPayableFee');
+  const elRegFee = document.getElementById('displayRegFee');
+  const elMonthly = document.getElementById('displayMonthlyInstallment');
+  const elRemainingNote = document.getElementById('displayRemainingFeeNote');
+  const elDiscountNote = document.getElementById('displayDiscountNote');
 
   if (elOriginal) elOriginal.textContent = `${originalFee.toLocaleString('ur-PK')} روپے`;
   if (elDiscount) {
     if (isMadrassa) {
       elDiscount.textContent = `${discountPercent}% (-${discountAmount.toLocaleString('ur-PK')} روپے)`;
-      elDiscount.className = 'text-xl font-bold font-mono text-emerald-400 badge-pulse';
+      elDiscount.className = 'text-lg sm:text-xl font-bold font-mono text-emerald-400 badge-pulse';
+      if (elDiscountNote) elDiscountNote.textContent = `کل فیس اب صرف ${totalPayable.toLocaleString('ur-PK')} روپے ہے`;
     } else {
       elDiscount.textContent = '0% (0 روپے)';
-      elDiscount.className = 'text-xl font-bold font-mono text-slate-400';
+      elDiscount.className = 'text-lg sm:text-xl font-bold font-mono text-slate-400';
+      if (elDiscountNote) elDiscountNote.textContent = 'دینی طلباء کے لیے 50% معاف';
     }
   }
-  if (elPayable) elPayable.textContent = `${payableFee.toLocaleString('ur-PK')} روپے`;
+  if (elRegFee) elRegFee.textContent = `${regFee.toLocaleString('ur-PK')} روپے`;
+  if (elMonthly) elMonthly.textContent = `${monthlyInstallment.toLocaleString('ur-PK')} روپے / ماہ`;
+  if (elRemainingNote) elRemainingNote.textContent = `باقی رقم: ${remainingFee.toLocaleString('ur-PK')} روپے (3 اقساط)`;
 }
 
 // Image Preview Helper (Safe)
@@ -605,15 +616,40 @@ function showAdmissionSlip(adm) {
   }
 
   const fee = adm.feeDetails || {};
-  document.getElementById('slipOriginalFee').textContent = `${(fee.originalFee || 5000).toLocaleString('ur-PK')} روپے`;
-  document.getElementById('slipDiscount').textContent = `${fee.discountPercent || 0}% (${(fee.discountAmount || 0).toLocaleString('ur-PK')} روپے)`;
-  document.getElementById('slipPaidFee').textContent = `${(fee.paidFee || 5000).toLocaleString('ur-PK')} روپے`;
+  const originalFee = fee.originalFee || 5000;
+  const regFee = fee.registrationFee || fee.paidFee || 1000;
+  const discountPercent = fee.discountPercent || 0;
+  const discountAmount = fee.discountAmount || 0;
+  const remainingFee = fee.remainingFee !== undefined ? fee.remainingFee : Math.max(0, (originalFee - discountAmount) - regFee);
+  const monthlyInst = fee.monthlyInstallment || Math.round(remainingFee / 3);
+
+  const elSlipOrig = document.getElementById('slipOriginalFee');
+  const elSlipDisc = document.getElementById('slipDiscount');
+  const elSlipPaid = document.getElementById('slipPaidFee');
+  const elSlipInst = document.getElementById('slipInstallments');
+  const elSlipLaptop = document.getElementById('slipLaptop');
+  const elSlipGemini = document.getElementById('slipGeminiOffer');
+
+  if (elSlipOrig) elSlipOrig.textContent = `${originalFee.toLocaleString('ur-PK')} روپے`;
+  if (elSlipDisc) elSlipDisc.textContent = `${discountPercent}% (${discountAmount.toLocaleString('ur-PK')} روپے)`;
+  if (elSlipPaid) elSlipPaid.textContent = `${regFee.toLocaleString('ur-PK')} روپے (رجسٹریشن فیس)`;
+  if (elSlipInst) elSlipInst.textContent = `باقی رقم: ${remainingFee.toLocaleString('ur-PK')} روپے (3 اقساط: ~${monthlyInst.toLocaleString('ur-PK')} روپے/ماہ)`;
+  if (elSlipLaptop) {
+    elSlipLaptop.innerHTML = adm.hasLaptop !== false
+      ? `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-check"></i> جی ہاں، لیپ ٹاپ موجود ہے</span>`
+      : `<span class="text-amber-700 font-semibold">کلاسز سے پہلے انتظام کر لیں گے</span>`;
+  }
+  if (elSlipGemini) {
+    elSlipGemini.innerHTML = adm.eligibleGeminiPro !== false
+      ? `<span class="text-purple-700 font-bold"><i class="fa-solid fa-gift text-amber-500"></i> مبارک ہو! پہلے 5 سٹوڈنٹس میں شامل (Gemini Pro مفت)</span>`
+      : `<span>سٹوڈنٹ لسٹ میں تصدیق کی جائے گی</span>`;
+  }
   document.getElementById('slipTid').textContent = escapeHtml(adm.transactionId || 'دستیاب نہیں');
 
   // WhatsApp share link - Directed to 03047809156
   const targetWhatsapp = '03047809156';
   const shareMsg = encodeURIComponent(
-    `السلام علیکم!\nمیں نے آن لائن کورس داخلہ فارم پر کر دیا ہے۔\n\nطالب علم کا نام: ${adm.fullName}\nوالد کا نام: ${adm.fatherName}\nشناختی کارڈ: ${adm.cnic}\nرجسٹریشن نمبر: ${adm.regNo}\nموبائل نمبر: ${adm.phone}\nشہر: ${adm.city}\nمدرسہ طالب علم: ${adm.isMadrassaStudent ? 'ہاں (50% رعایت لاگو)' : 'نہیں'}\nادا شدہ فیس: ${fee.paidFee || 0} روپے\nایزی پیسہ ٹرانزیکشن آئی ڈی: ${adm.transactionId || '-'}\n\nبرائے مہربانی فیس تصدیق کر کے مجھے کلاس گروپ میں شامل فرما لیں۔`
+    `السلام علیکم!\nمیں نے آن لائن کورس داخلہ فارم پر کر دیا ہے۔\n\nطالب علم کا نام: ${adm.fullName}\nوالد کا نام: ${adm.fatherName}\nشناختی کارڈ: ${adm.cnic}\nرجسٹریشن نمبر: ${adm.regNo}\nموبائل نمبر: ${adm.phone}\nشہر: ${adm.city}\nکورس دورانیہ: 3 ماہ\nلیپ ٹاپ: ${adm.hasLaptop !== false ? 'موجود ہے' : 'انتظام ہو جائے گا'}\nادا شدہ رجسٹریشن فیس: ${regFee} روپے\nباقی فیس: 3 ماہانہ اقساط میں قابلِ ادائیگی\nٹرانزیکشن آئی ڈی: ${adm.transactionId || '-'}\n\nبرائے مہربانی فیس تصدیق فرما کر مجھے واٹس ایپ کلاس گروپ میں شامل فرما لیں۔`
   );
   const waBtn = document.getElementById('slipWhatsappShare');
   if (waBtn) {

@@ -522,6 +522,14 @@ window.viewApplicantDetails = function (id) {
           <span class="text-slate-400 block text-[11px]">شہر اور پتہ</span>
           <span class="font-semibold text-slate-700">${city} ${address ? `(${address})` : ''}</span>
         </div>
+        <div>
+          <span class="text-slate-400 block text-[11px]">لیپ ٹاپ دستیابی</span>
+          <span class="font-bold ${adm.hasLaptop !== false ? 'text-emerald-700' : 'text-amber-700'}">${adm.hasLaptop !== false ? '<i class="fa-solid fa-check"></i> جی ہاں، موجود ہے' : 'انتظام کریں گے'}</span>
+        </div>
+        <div>
+          <span class="text-slate-400 block text-[11px]">جیمینائی پرو (Gemini Pro) آفر</span>
+          <span class="font-bold ${adm.eligibleGeminiPro !== false ? 'text-purple-700' : 'text-slate-600'}">${adm.eligibleGeminiPro !== false ? '🎁 پہلے 5 طلباء میں اہل' : 'نارمل داخلہ'}</span>
+        </div>
       </div>
     </div>
 
@@ -564,12 +572,12 @@ window.viewApplicantDetails = function (id) {
     <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
       <h4 class="font-bold text-sm text-slate-800 mb-3 flex items-center gap-2">
         <i class="fa-solid fa-receipt"></i>
-        <span>فیس اور ادائیگی کی تفصیلات</span>
+        <span>فیس اور اقساط کی تفصیلات (کورس دورانیہ: 3 ماہ)</span>
       </h4>
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs mb-4">
         <div>
-          <span class="text-slate-400 block">اصل فیس</span>
+          <span class="text-slate-400 block">کل کورس فیس</span>
           <span class="font-mono font-bold text-slate-800">${fee.originalFee || 5000} روپے</span>
         </div>
         <div>
@@ -577,12 +585,12 @@ window.viewApplicantDetails = function (id) {
           <span class="font-mono font-bold text-emerald-600">${fee.discountPercent || 0}% (-${fee.discountAmount || 0} روپے)</span>
         </div>
         <div>
-          <span class="text-slate-400 block">ادا شدہ رقم</span>
-          <span class="font-mono font-bold text-slate-900 text-sm">${fee.paidFee || 5000} روپے</span>
+          <span class="text-slate-400 block">رجسٹریشن فیس (ادا شدہ)</span>
+          <span class="font-mono font-bold text-amber-700 text-sm">${fee.paidFee || fee.registrationFee || 1000} روپے</span>
         </div>
         <div>
-          <span class="text-slate-400 block">طریقہ / ٹرانزیکشن آئی ڈی</span>
-          <span class="font-mono font-bold text-slate-800">${method} / ${tid}</span>
+          <span class="text-slate-400 block">باقی فیس اقساط</span>
+          <span class="font-mono font-bold text-cyan-800 text-xs">${fee.remainingFee !== undefined ? fee.remainingFee : (fee.originalFee || 5000) - (fee.paidFee || 1000)} روپے (3 اقساط)</span>
         </div>
       </div>
 
@@ -765,12 +773,15 @@ window.exportCsv = function () {
     'شہر',
     'پتہ',
     'تعلیمی قابلیت',
+    'لیپ ٹاپ دستیابی',
+    'Gemini Pro آفر',
     'مدرسہ طالب علم',
     'مدرسے کا نام',
     'مدرسہ کلاس',
-    'اصل فیس',
+    'کل کورس فیس',
     'رعایت فیصد',
-    'ادا شدہ فیس',
+    'رجسٹریشن فیس (ادا شدہ)',
+    'باقی فیس اقساط',
     'ادائیگی کا طریقہ',
     'ٹرانزیکشن آئی ڈی'
   ];
@@ -793,12 +804,15 @@ window.exportCsv = function () {
     escapeCsv(a.city),
     escapeCsv(a.address),
     escapeCsv(a.qualification),
+    escapeCsv(a.hasLaptop !== false ? 'ہاں (موجود ہے)' : 'انتظام کریں گے'),
+    escapeCsv(a.eligibleGeminiPro !== false ? 'اہل (Gemini Pro فری)' : 'نارمل'),
     escapeCsv(a.isMadrassaStudent ? 'ہاں (50% رعایت)' : 'نہیں'),
     escapeCsv(a.madrassaName || '-'),
     escapeCsv(a.madrassaClass || '-'),
-    escapeCsv(a.feeDetails ? a.feeDetails.originalFee : ''),
-    escapeCsv(a.feeDetails ? a.feeDetails.discountPercent + '%' : ''),
-    escapeCsv(a.feeDetails ? a.feeDetails.paidFee : ''),
+    escapeCsv(a.feeDetails ? a.feeDetails.originalFee : '5000'),
+    escapeCsv(a.feeDetails ? a.feeDetails.discountPercent + '%' : '0%'),
+    escapeCsv(a.feeDetails ? (a.feeDetails.paidFee || a.feeDetails.registrationFee || 1000) : '1000'),
+    escapeCsv(a.feeDetails && a.feeDetails.remainingFee !== undefined ? `${a.feeDetails.remainingFee} روپے (3 اقساط)` : '4000 روپے'),
     escapeCsv(a.paymentMethod),
     escapeCsv(a.transactionId || '-')
   ]);
