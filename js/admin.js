@@ -2,7 +2,7 @@
 let allAdmissions = [];
 let currentAdminToken = localStorage.getItem('adminToken') || '';
 let currentConfig = {
-  courseTitle: "آن لائن پروفیشنل آئی ٹی و کمپیوٹر کورس",
+  courseTitle: "آن لائن اے آئی و انگلش لینگویج کورس (AI & English Course)",
   courseFee: 5000,
   madrassaDiscountPercent: 50,
   adminPassword: "admin123",
@@ -10,16 +10,11 @@ let currentConfig = {
   paymentAccounts: {
     easypaisa: {
       accountTitle: "Allah Ditta (اللہ دتہ)",
-      accountNumber: "0328-8765822"
+      accountNumber: "0322-8765822"
     },
     jazzcash: {
       accountTitle: "Allah Ditta (اللہ دتہ)",
-      accountNumber: "0304-7809156"
-    },
-    bank: {
-      bankName: "Meezan Bank Limited",
-      accountTitle: "Allah Ditta",
-      accountNumber: "01010102030405"
+      accountNumber: "0322-8765822"
     }
   }
 };
@@ -340,6 +335,7 @@ function renderAdmissionsTable(list) {
         <td class="py-3 px-4">
           <div class="font-bold text-slate-800">${escapedName}</div>
           <div class="text-xs text-slate-500">ولد: ${escapedFather}</div>
+          ${a.selectedCourse ? `<div class="text-[10px] text-brand-700 font-semibold truncate max-w-[160px]" title="${escapeHtml(a.selectedCourse)}">${escapeHtml(a.selectedCourse)}</div>` : ''}
         </td>
 
         <!-- CNIC -->
@@ -523,6 +519,10 @@ window.viewApplicantDetails = function (id) {
           <span class="font-semibold text-slate-700">${city} ${address ? `(${address})` : ''}</span>
         </div>
         <div>
+          <span class="text-slate-400 block text-[11px]">منتخب کردہ کورس</span>
+          <span class="font-bold text-brand-700">${escapeHtml(adm.selectedCourse || currentConfig.courseTitle || 'اے آئی مع انگلش کورس')}</span>
+        </div>
+        <div>
           <span class="text-slate-400 block text-[11px]">لیپ ٹاپ دستیابی</span>
           <span class="font-bold ${adm.hasLaptop !== false ? 'text-emerald-700' : 'text-amber-700'}">${adm.hasLaptop !== false ? '<i class="fa-solid fa-check"></i> جی ہاں، موجود ہے' : 'انتظام کریں گے'}</span>
         </div>
@@ -670,12 +670,6 @@ window.openSettingsModal = function () {
       document.getElementById('cfgJcTitle').value = jc.accountTitle || '';
       document.getElementById('cfgJcNum').value = jc.accountNumber || '';
     }
-    const bk = currentConfig.paymentAccounts.bank;
-    if (bk) {
-      document.getElementById('cfgBankName').value = bk.bankName || '';
-      document.getElementById('cfgBankTitle').value = bk.accountTitle || '';
-      document.getElementById('cfgBankNum').value = bk.accountNumber || '';
-    }
   }
 
   document.getElementById('cfgNewPassword').value = '';
@@ -705,10 +699,6 @@ async function handleSaveSettings(e) {
   const jcTitle = document.getElementById('cfgJcTitle').value.trim();
   const jcNum = document.getElementById('cfgJcNum').value.trim();
 
-  const bankName = document.getElementById('cfgBankName').value.trim();
-  const bankTitle = document.getElementById('cfgBankTitle').value.trim();
-  const bankNum = document.getElementById('cfgBankNum').value.trim();
-
   const payload = {
     courseTitle: title,
     courseFee: fee,
@@ -723,12 +713,6 @@ async function handleSaveSettings(e) {
         name: 'جاز کیش (JazzCash)',
         accountTitle: jcTitle,
         accountNumber: jcNum
-      },
-      bank: {
-        name: bankName || 'بینک اکاؤنٹ',
-        bankName: bankName,
-        accountTitle: bankTitle,
-        accountNumber: bankNum
       }
     }
   };

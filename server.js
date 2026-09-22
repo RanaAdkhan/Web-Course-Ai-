@@ -250,6 +250,7 @@ app.post('/api/admissions', submissionLimiter, (req, res) => {
 
     try {
       const {
+        selectedCourse,
         fullName,
         fatherName,
         cnic,
@@ -335,6 +336,7 @@ app.post('/api/admissions', submissionLimiter, (req, res) => {
         submittedAt: new Date().toISOString(),
         status: 'زیرِ تصدیق',
         statusEn: 'pending',
+        selectedCourse: sanitizeInput(selectedCourse, 120) || 'آن لائن اے آئی و انگلش لینگویج کورس',
         fullName: sanitizeInput(fullName, 70),
         fatherName: sanitizeInput(fatherName, 70),
         cnic: sanitizeInput(cnic, 20),

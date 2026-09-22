@@ -1,6 +1,6 @@
 {
-  "courseTitle": "آن لائن پروفیشنل اے آئی کورس (AI Course)",
-  "courseDescription": "شاندار مستقبل کی طرف ایک قدم - ویب، ایپ ڈویلپمنٹ اور اے آئی ویڈیو ایڈز پریکٹیکل کورس (دورانیہ: 3 ماہ | لیپ ٹاپ لازمی | پہلے 5 طلباء کو Gemini Pro فری)",
+  "courseTitle": "آن لائن اے آئی و انگلش لینگویج کورس (AI & English Course)",
+  "courseDescription": "شاندار مستقبل کی طرف ایک قدم - ویب، ایپ ڈویلپمنٹ، اے آئی ویڈیو ایڈز اور انگلش لینگویج پریکٹیکل کورس (دورانیہ: 3 ماہ | لیپ ٹاپ لازمی | پہلے 5 طلباء کو Gemini Pro فری)",
   "courseDuration": "3 ماہ",
   "courseFee": 5000,
   "madrassaDiscountPercent": 50,
@@ -13,24 +13,16 @@
     "easypaisa": {
       "name": "ایزی پیسہ (Easypaisa)",
       "accountTitle": "Allah Ditta (اللہ دتہ)",
-      "accountNumber": "0328-8765822",
-      "rawNumber": "03288765822",
+      "accountNumber": "0322-8765822",
+      "rawNumber": "03228765822",
       "instructions": "ایزی پیسہ ایپ یا قریبی فرنچائز / دکان سے اس نمبر پر فیس بھیج کر ٹرانزیکشن رسید حاصل کریں۔"
     },
     "jazzcash": {
-      "name": "جاز کیش / واٹس ایپ",
+      "name": "جاز کیش (JazzCash)",
       "accountTitle": "Allah Ditta (اللہ دتہ)",
-      "accountNumber": "0304-7809156",
-      "rawNumber": "03047809156",
-      "instructions": "جاز کیش یا واٹس ایپ کے ذریعے تصدیق کے لیے رابطہ کریں۔"
-    },
-    "bank": {
-      "name": "بینک ٹرانسفر",
-      "bankName": "Meezan Bank Limited",
-      "accountTitle": "Allah Ditta",
-      "accountNumber": "01010102030405",
-      "iban": "PK00MEZN0001010102030405",
-      "instructions": "کسی بھی بینکنگ ایپ سے فیس ٹرانسفر کر کے سلپ منسلک کریں۔"
+      "accountNumber": "0322-8765822",
+      "rawNumber": "03228765822",
+      "instructions": "جاز کیش ایپ یا دکان سے اس نمبر پر فیس ٹرانسفر کر کے رسید منسلک کریں۔"
     }
   }
 }

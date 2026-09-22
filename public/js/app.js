@@ -1,10 +1,9 @@
 // Student Admission Form Logic (Professional Edition)
 let appConfig = {
-  courseTitle: "آن لائن پروفیشنل اے آئی کورس (AI Course)",
-  courseDescription: "شاندار مستقبل کی طرف ایک قدم - ویب، ایپ ڈویلپمنٹ اور اے آئی ویڈیو ایڈز پریکٹیکل کورس (دورانیہ: 3 ماہ | لیپ ٹاپ لازمی | پہلے 5 طلباء کو Gemini Pro فری)",
+  courseTitle: "آن لائن اے آئی و انگلش لینگویج کورس (AI & English Course)",
+  courseDescription: "شاندار مستقبل کی طرف ایک قدم - ویب، ایپ ڈویلپمنٹ، اے آئی ویڈیو ایڈز اور انگلش لینگویج پریکٹیکل کورس (دورانیہ: 3 ماہ | لیپ ٹاپ لازمی | پہلے 5 طلباء کو Gemini Pro فری)",
   courseDuration: "3 ماہ",
   courseFee: 5000,
-  registrationFee: 1000,
   madrassaDiscountPercent: 50,
   requiresLaptop: true,
   specialOffer: "پہلے 5 سٹوڈنٹس کو جیمینائی پرو (Gemini Pro) بالکل مفت دیا جائے گا!",
@@ -14,20 +13,14 @@ let appConfig = {
     easypaisa: {
       name: "ایزی پیسہ (Easypaisa)",
       accountTitle: "Allah Ditta (اللہ دتہ)",
-      accountNumber: "0328-8765822",
-      rawNumber: "03288765822"
+      accountNumber: "0322-8765822",
+      rawNumber: "03228765822"
     },
     jazzcash: {
-      name: "جاز کیش / واٹس ایپ",
+      name: "جاز کیش (JazzCash)",
       accountTitle: "Allah Ditta (اللہ دتہ)",
-      accountNumber: "0304-7809156",
-      rawNumber: "03047809156"
-    },
-    bank: {
-      name: "بینک اکاؤنٹ",
-      bankName: "Meezan Bank Limited",
-      accountTitle: "Allah Ditta",
-      accountNumber: "01010102030405"
+      accountNumber: "0322-8765822",
+      rawNumber: "03228765822"
     }
   }
 };
@@ -106,7 +99,7 @@ function updateUiWithConfig() {
       const elTitle = document.getElementById('easypaisaTitle');
       const elNum = document.getElementById('easypaisaNumber');
       if (elTitle) elTitle.textContent = ep.accountTitle || 'Allah Ditta (اللہ دتہ)';
-      if (elNum) elNum.textContent = ep.accountNumber || '0328-8765822';
+      if (elNum) elNum.textContent = ep.accountNumber || '0322-8765822';
     }
 
     const jc = appConfig.paymentAccounts.jazzcash;
@@ -114,17 +107,7 @@ function updateUiWithConfig() {
       const elTitle = document.getElementById('jazzcashTitle');
       const elNum = document.getElementById('jazzcashNumber');
       if (elTitle) elTitle.textContent = jc.accountTitle || 'Allah Ditta (اللہ دتہ)';
-      if (elNum) elNum.textContent = jc.accountNumber || '0304-7809156';
-    }
-
-    const bk = appConfig.paymentAccounts.bank;
-    if (bk) {
-      const elBankName = document.getElementById('bankName');
-      const elTitle = document.getElementById('bankTitle');
-      const elNum = document.getElementById('bankNumber');
-      if (elBankName) elBankName.textContent = bk.bankName || 'Meezan Bank Limited';
-      if (elTitle) elTitle.textContent = bk.accountTitle || 'Allah Ditta';
-      if (elNum) elNum.textContent = `A/C: ${bk.accountNumber || '01010102030405'}`;
+      if (elNum) elNum.textContent = jc.accountNumber || '0322-8765822';
     }
   }
 
@@ -379,6 +362,7 @@ async function handleFormSubmit(e) {
   const submitBtnText = document.getElementById('submitBtnText');
   const submitSpinner = document.getElementById('submitSpinner');
 
+  const selectedCourse = document.getElementById('selectedCourse')?.value || 'مکمل کورس: اے آئی مع انگلش لینگویج (AI + English Language)';
   const fullName = document.getElementById('fullName')?.value.trim();
   const fatherName = document.getElementById('fatherName')?.value.trim();
   const cnic = document.getElementById('cnic')?.value.trim();
@@ -387,6 +371,7 @@ async function handleFormSubmit(e) {
   const address = document.getElementById('address')?.value.trim() || '';
   const qualification = document.getElementById('qualification')?.value || '';
   const email = document.getElementById('email')?.value.trim() || '';
+  const hasLaptop = document.querySelector('input[name="hasLaptop"]:checked')?.value !== 'no';
   const studentPhoto = document.getElementById('studentPhoto')?.files[0];
   const paymentReceipt = document.getElementById('paymentReceipt')?.files[0];
   const madrassaCard = document.getElementById('madrassaCard')?.files[0];
@@ -499,6 +484,8 @@ async function handleFormSubmit(e) {
         submittedAt: new Date().toISOString(),
         status: 'زیرِ تصدیق',
         statusEn: 'pending',
+        selectedCourse,
+        hasLaptop,
         fullName: fullName.replace(/[<>]/g, ''),
         fatherName: fatherName.replace(/[<>]/g, ''),
         cnic: cnic.replace(/[<>]/g, ''),
@@ -591,6 +578,11 @@ function showAdmissionSlip(adm) {
     document.getElementById('slipPhoto').src = safeUrl(adm.files.studentPhoto);
   }
 
+  const elSlipCourse = document.getElementById('slipCourseName');
+  if (elSlipCourse) {
+    elSlipCourse.textContent = adm.selectedCourse || appConfig.courseTitle || 'مکمل کورس: اے آئی مع انگلش لینگویج';
+  }
+
   document.getElementById('slipName').textContent = escapeHtml(adm.fullName);
   document.getElementById('slipFatherName').textContent = escapeHtml(adm.fatherName);
   document.getElementById('slipCnic').textContent = escapeHtml(adm.cnic);
@@ -637,8 +629,9 @@ function showAdmissionSlip(adm) {
 
   // WhatsApp share link - Directed to 03047809156
   const targetWhatsapp = '03047809156';
+  const paymentMethodLabel = adm.paymentMethod === 'jazzcash' ? 'جاز کیش (JazzCash)' : (adm.paymentMethod === 'easypaisa' ? 'ایزی پیسہ (Easypaisa)' : (adm.paymentMethod || 'آن لائن'));
   const shareMsg = encodeURIComponent(
-    `السلام علیکم!\nمیں نے آن لائن کورس داخلہ فارم پر کر دیا ہے۔\n\nطالب علم کا نام: ${adm.fullName}\nوالد کا نام: ${adm.fatherName}\nشناختی کارڈ: ${adm.cnic}\nرجسٹریشن نمبر: ${adm.regNo}\nموبائل نمبر: ${adm.phone}\nشہر: ${adm.city}\nکورس دورانیہ: 3 ماہ\nلیپ ٹاپ: ${adm.hasLaptop !== false ? 'موجود ہے' : 'انتظام ہو جائے گا'}\nادا شدہ ایڈوانس فیس: ${paidFee} روپے\nٹرانزیکشن آئی ڈی: ${adm.transactionId || '-'}\n\nبرائے مہربانی فیس تصدیق فرما کر مجھے واٹس ایپ کلاس گروپ میں شامل فرما لیں۔`
+    `السلام علیکم!\nمیں نے آن لائن داخلہ فارم پر کر دیا ہے۔\n\nکورس: ${adm.selectedCourse || appConfig.courseTitle}\nطالب علم کا نام: ${adm.fullName}\nوالد کا نام: ${adm.fatherName}\nشناختی کارڈ: ${adm.cnic}\nرجسٹریشن نمبر: ${adm.regNo}\nموبائل نمبر: ${adm.phone}\nشہر: ${adm.city}\nکورس دورانیہ: 3 ماہ\nلیپ ٹاپ: ${adm.hasLaptop !== false ? 'موجود ہے' : 'انتظام ہو جائے گا'}\nادا شدہ ایڈوانس فیس: ${paidFee} روپے\nادائیگی کا طریقہ: ${paymentMethodLabel}\nٹرانزیکشن آئی ڈی: ${adm.transactionId || '-'}\n\nبرائے مہربانی فیس تصدیق فرما کر مجھے واٹس ایپ کلاس گروپ میں شامل فرما لیں۔`
   );
   const waBtn = document.getElementById('slipWhatsappShare');
   if (waBtn) {
