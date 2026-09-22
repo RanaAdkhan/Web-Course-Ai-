@@ -2,7 +2,7 @@
 let allAdmissions = [];
 let currentAdminToken = localStorage.getItem('adminToken') || '';
 let currentConfig = {
-  courseTitle: "آن لائن اے آئی مع اسپوکن انگلش کورس (Complete AI & English Course)",
+  courseTitle: "آن لائن ویب و موبائل ایپ ڈویلپمنٹ کورس (Web & App Development)",
   courseFee: 5000,
   madrassaDiscountPercent: 50,
   adminPassword: "admin123",
@@ -516,7 +516,7 @@ window.viewApplicantDetails = function (id) {
         </div>
         <div>
           <span class="text-slate-400 block text-[11px]">منتخب کردہ کورس</span>
-          <span class="font-bold text-brand-700">${escapeHtml(adm.selectedCourse || currentConfig.courseTitle || 'اے آئی مع انگلش کورس')}</span>
+          <span class="font-bold text-brand-700">${escapeHtml(adm.selectedCourse || currentConfig.courseTitle || 'آن لائن ویب و موبائل ایپ ڈویلپمنٹ کورس')}</span>
         </div>
         <div>
           <span class="text-slate-400 block text-[11px]">لیپ ٹاپ دستیابی</span>

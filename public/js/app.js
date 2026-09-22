@@ -1,7 +1,7 @@
 // Student Admission Form Logic (Professional Edition)
 let appConfig = {
-  courseTitle: "آن لائن اے آئی مع اسپوکن انگلش کورس (Complete AI & English Course)",
-  courseDescription: "شاندار مستقبل کی طرف ایک قدم - ویب، ایپ ڈویلپمنٹ، اے آئی ویڈیو ایڈز اور انگلش لینگویج پریکٹیکل کورس (دورانیہ: 3 ماہ | لیپ ٹاپ لازمی | پہلے 5 طلباء کو Gemini Pro فری)",
+  courseTitle: "آن لائن ویب و موبائل ایپ ڈویلپمنٹ کورس (Web & App Development)",
+  courseDescription: "شاندار مستقبل کی طرف ایک قدم - مکمل ویب سائٹ و موبائل ایپ ڈویلپمنٹ، جدید اے آئی اور اسپوکن انگلش پریکٹیکل کورس (دورانیہ: 3 ماہ | لیپ ٹاپ لازمی | پہلے 5 طلباء کو Gemini Pro فری)",
   courseDuration: "3 ماہ",
   courseFee: 5000,
   madrassaDiscountPercent: 50,
@@ -590,7 +590,7 @@ function showAdmissionSlip(adm) {
 
   const elSlipCourse = document.getElementById('slipCourseName');
   if (elSlipCourse) {
-    elSlipCourse.textContent = adm.selectedCourse || appConfig.courseTitle || 'مکمل کورس: اے آئی مع انگلش لینگویج';
+    elSlipCourse.textContent = adm.selectedCourse || appConfig.courseTitle || 'آن لائن ویب و موبائل ایپ ڈویلپمنٹ کورس';
   }
 
   document.getElementById('slipName').textContent = escapeHtml(adm.fullName);
