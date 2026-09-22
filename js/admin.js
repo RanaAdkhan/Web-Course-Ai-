@@ -317,7 +317,7 @@ function renderAdmissionsTable(list) {
         <td class="py-3 px-4">
           <div class="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 cursor-pointer shrink-0" 
                onclick="openLightbox('${photoUrl}', 'طالب علم کی تصویر - ${escapedName}')">
-            ${photoUrl ? `<img src="${photoUrl}" alt="${escapedName}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-user text-slate-400 p-2.5"></i>`}
+            ${photoUrl ? `<img src="${photoUrl}" alt="${escapedName}" class="w-full h-full object-cover">` : `<img src="images/logo.png?v=4" alt="GMAD" class="w-full h-full object-contain p-1 bg-white">`}
           </div>
         </td>
 
@@ -486,7 +486,7 @@ window.viewApplicantDetails = function (id) {
     <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-5 rounded-2xl bg-slate-50 border border-slate-200">
       <div class="w-32 h-40 rounded-2xl bg-white border border-slate-200 overflow-hidden shrink-0 shadow-sm cursor-pointer"
            onclick="openLightbox('${photoUrl}', 'طالب علم: ${name}')">
-        ${photoUrl ? `<img src="${photoUrl}" alt="${name}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-slate-300"><i class="fa-solid fa-user text-4xl"></i></div>`}
+        ${photoUrl ? `<img src="${photoUrl}" alt="${name}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center p-3 bg-white"><img src="images/logo.png?v=4" alt="GMAD" class="w-20 h-20 object-contain"></div>`}
       </div>
 
       <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm w-full">

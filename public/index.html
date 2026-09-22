@@ -9,9 +9,9 @@
   <title>GMAD TECH ACADEMY - آن لائن داخلہ پورٹل</title>
   
   <!-- Favicon / App Icon -->
-  <link rel="icon" type="image/png" href="images/logo.png?v=3">
-  <link rel="shortcut icon" type="image/png" href="images/logo.png?v=3">
-  <link rel="apple-touch-icon" href="images/logo.png?v=3">
+  <link rel="icon" type="image/png" href="images/logo.png?v=4">
+  <link rel="shortcut icon" type="image/png" href="images/logo.png?v=4">
+  <link rel="apple-touch-icon" href="images/logo.png?v=4">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -48,7 +48,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
 
@@ -58,8 +58,8 @@
       <!-- App Icon / Celebration -->
       <div class="relative shrink-0">
         <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 via-emerald-500 to-teal-400 p-0.5 shadow-lg">
-          <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center p-1 overflow-hidden">
-            <img src="images/logo.png?v=3" alt="GMAD" class="w-full h-full object-contain">
+          <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center p-1 overflow-hidden">
+            <img src="images/logo.png?v=4" alt="GMAD" class="w-full h-full object-contain">
           </div>
         </div>
         <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-900 rounded-full animate-ping"></span>
@@ -93,7 +93,9 @@
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3 space-x-reverse">
         <a href="index.html" class="flex items-center space-x-3 space-x-reverse group">
-          <img src="images/logo.png?v=3" alt="GMAD TECH ACADEMY" class="w-11 h-11 rounded-xl object-contain bg-slate-950 p-1 shadow-md border border-slate-200 group-hover:scale-105 transition-transform">
+          <div class="w-12 h-12 rounded-2xl bg-white p-1 shadow-md border border-slate-200/90 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
+            <img src="images/logo.png?v=4" alt="GMAD TECH ACADEMY" class="w-full h-full object-contain">
+          </div>
           <div>
             <h1 class="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight leading-none">GMAD TECH ACADEMY</h1>
             <p class="text-[11px] sm:text-xs text-slate-500 font-medium mt-1">Learn. Create. Lead. | آن لائن داخلہ پورٹل</p>
@@ -125,7 +127,9 @@
     <div class="relative max-w-4xl mx-auto text-center">
       <!-- Academy Branding Badge -->
       <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 text-white border border-white/20 mb-3.5 backdrop-blur-md shadow-lg">
-        <img src="images/logo.png?v=3" alt="GMAD TECH ACADEMY" class="w-6 h-6 rounded-md object-contain bg-slate-950 p-0.5 shadow">
+        <div class="w-6 h-6 rounded bg-white p-0.5 flex items-center justify-center overflow-hidden shadow">
+          <img src="images/logo.png?v=4" alt="GMAD TECH ACADEMY" class="w-full h-full object-contain">
+        </div>
         <span class="tracking-wider uppercase text-amber-300 font-extrabold text-xs sm:text-sm">GMAD TECH ACADEMY</span>
         <span class="text-blue-200 hidden sm:inline">• Learn. Create. Lead.</span>
       </div>
@@ -343,11 +347,14 @@
 
           <div class="flex flex-col sm:flex-row items-center gap-6 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
             <!-- Photo Preview Frame -->
-            <div class="relative w-32 h-40 rounded-2xl bg-white border-2 border-dashed border-slate-300 flex flex-col items-center justify-center overflow-hidden shadow-inner group">
-              <img id="photoPreviewImg" class="w-full h-full object-cover hidden" alt="پیش نظارہ">
-              <div id="photoPlaceholder" class="text-center p-2">
-                <i class="fa-solid fa-user-tie text-3xl text-slate-300 mb-2"></i>
-                <span class="text-[11px] text-slate-400 block font-medium">تصویر یہاں نظر آئے گی</span>
+            <div class="relative w-32 h-40 rounded-2xl bg-white border-2 border-dashed border-slate-300 flex flex-col items-center justify-center overflow-hidden shadow-inner group p-2">
+              <img id="photoPreviewImg" class="w-full h-full object-cover hidden rounded-xl" alt="پیش نظارہ">
+              <div id="photoPlaceholder" class="text-center p-2 flex flex-col items-center justify-center">
+                <div class="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-200 p-1 mb-2 flex items-center justify-center shadow-sm overflow-hidden">
+                  <img src="images/logo.png?v=4" alt="GMAD پروفائل" class="w-full h-full object-contain">
+                </div>
+                <span class="text-[11px] text-slate-500 font-bold block">پروفائل تصویر</span>
+                <span class="text-[10px] text-slate-400 block">منتخب کریں</span>
               </div>
             </div>
 
@@ -607,7 +614,9 @@
         <!-- Slip Header -->
         <div class="text-center pb-5 border-b-2 border-dashed border-slate-200">
           <div class="flex items-center justify-center gap-3 mb-2">
-            <img src="images/logo.png?v=3" alt="GMAD TECH ACADEMY" class="w-12 h-12 rounded-2xl object-contain bg-slate-950 p-1 shadow-md border border-slate-300">
+            <div class="w-14 h-14 rounded-2xl bg-white p-1 shadow-md border border-slate-200 flex items-center justify-center overflow-hidden">
+              <img src="images/logo.png?v=4" alt="GMAD TECH ACADEMY" class="w-full h-full object-contain">
+            </div>
             <div class="text-right">
               <h1 class="font-black text-xl text-slate-900 leading-tight">GMAD TECH ACADEMY</h1>
               <p class="text-[11px] text-brand-600 font-bold font-mono">Learn. Create. Lead.</p>
@@ -622,8 +631,8 @@
 
         <!-- Student Profile Row -->
         <div class="flex items-center gap-5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-          <div class="w-24 h-28 rounded-xl bg-white border border-slate-200 overflow-hidden shadow-sm shrink-0">
-            <img id="slipPhoto" src="" alt="طالب علم تصویر" class="w-full h-full object-cover">
+          <div class="w-24 h-28 rounded-xl bg-white border border-slate-200 overflow-hidden shadow-sm shrink-0 flex items-center justify-center p-1">
+            <img id="slipPhoto" src="images/logo.png?v=4" alt="طالب علم تصویر" class="w-full h-full object-contain">
           </div>
           <div class="grid grid-cols-2 gap-3 flex-1 text-xs sm:text-sm">
             <div>
