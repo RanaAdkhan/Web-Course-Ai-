@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchConfig();
   setupEventListeners();
   setupCnicFormatter();
-  startRecentAdmissionsTicker();
 });
 
 // Fetch configuration from backend if online
@@ -657,40 +656,3 @@ window.closeSlipModal = function () {
   const modal = document.getElementById('admissionSlipModal');
   if (modal) modal.classList.add('hidden');
 };
-
-// Live Recent Admissions Ticker (App-Style Top Push Notifications)
-function startRecentAdmissionsTicker() {
-  const sampleNames = [
-    { name: 'محمد حمزہ', city: 'لاہور', tag: '50% مدرسہ رعایت منظور' },
-    { name: 'عثمان غنی', city: 'فیصل آباد', tag: 'Gemini Pro مفت آفر اہل' },
-    { name: 'عبدالرحمٰن', city: 'کراچی', tag: '50% مدرسہ رعایت منظور' },
-    { name: 'حافظ بلال', city: 'راولپنڈی', tag: 'داخلہ کنفرم ہو گیا' },
-    { name: 'محمد یاسین', city: 'ملتان', tag: '50% مدرسہ رعایت منظور' },
-    { name: 'علی احمد', city: 'گوجرانوالہ', tag: 'Gemini Pro مفت آفر اہل' }
-  ];
-
-  let index = 0;
-
-  // Show first notification after 3.5 seconds
-  setTimeout(() => {
-    showNextAdmissionPush();
-    setInterval(showNextAdmissionPush, 13000);
-  }, 3500);
-
-  function showNextAdmissionPush() {
-    // Don't override if user is currently looking at their own admission modal
-    const modal = document.getElementById('admissionSlipModal');
-    if (modal && !modal.classList.contains('hidden')) return;
-
-    const student = sampleNames[index % sampleNames.length];
-    index++;
-
-    window.showTopAppNotification({
-      icon: '🔔',
-      title: `<b class="text-white">${student.name}</b> <span class="text-slate-300 font-normal">(${student.city})</span>`,
-      body: `نے آن لائن داخلہ لیا! • <span class="text-amber-300 font-semibold">${student.tag}</span>`,
-      time: `${Math.floor(Math.random() * 6) + 2} منٹ پہلے`,
-      playSound: false
-    });
-  }
-}
