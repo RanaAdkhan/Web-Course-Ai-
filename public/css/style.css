@@ -8,8 +8,7 @@
   src: local('Jameel Noori Nastaleeq'),
        local('Jameel Noori Nastaleeq Regular'),
        url('../fonts/JameelNooriNastaleeqRegular.woff') format('woff'),
-       url('fonts/JameelNooriNastaleeqRegular.woff') format('woff'),
-       url('https://fonts.cdnfonts.com/s/149204/JameelNooriNastaleeqRegular.woff') format('woff');
+       url('fonts/JameelNooriNastaleeqRegular.woff') format('woff');
   font-display: swap;
 }
 
@@ -20,8 +19,7 @@
   src: local('Jameel Noori Nastaleeq'),
        local('Jameel Noori Nastaleeq Regular'),
        url('../fonts/JameelNooriNastaleeqRegular.woff') format('woff'),
-       url('fonts/JameelNooriNastaleeqRegular.woff') format('woff'),
-       url('https://fonts.cdnfonts.com/s/149204/JameelNooriNastaleeqRegular.woff') format('woff');
+       url('fonts/JameelNooriNastaleeqRegular.woff') format('woff');
   font-display: swap;
 }
 
@@ -31,7 +29,7 @@
   --primary-light: #d1fae5; /* Emerald 100 */
   --secondary: #1e293b; /* Slate 800 */
   --accent: #f59e0b; /* Amber 500 */
-  --urdu-font: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Urdu Typesetting', Tahoma, serif;
+  --urdu-font: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
 }
 
 body {
