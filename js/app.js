@@ -1,26 +1,28 @@
-// Student Admission Form Logic (Secured)
+// Student Admission Form Logic (Professional Edition)
 let appConfig = {
   courseTitle: "آن لائن پروفیشنل آئی ٹی و کمپیوٹر کورس",
   courseDescription: "شاندار مستقبل کی طرف ایک قدم - بنیادی سے لے کر ایڈوانس تک مکمل پریکٹیکل کورس",
   courseFee: 5000,
   madrassaDiscountPercent: 50,
-  supportPhone: "0300-1234567",
-  whatsappGroup: "https://chat.whatsapp.com/example",
+  supportPhone: "0304-7809156",
+  whatsappNumber: "03047809156",
   paymentAccounts: {
     easypaisa: {
       name: "ایزی پیسہ (Easypaisa)",
-      accountTitle: "کورس ایڈمن",
-      accountNumber: "03001234567"
+      accountTitle: "Allah Ditta (اللہ دتہ)",
+      accountNumber: "0328-8765822",
+      rawNumber: "03288765822"
     },
     jazzcash: {
-      name: "جاز کیش (JazzCash)",
-      accountTitle: "کورس ایڈمن",
-      accountNumber: "03217654321"
+      name: "جاز کیش / واٹس ایپ",
+      accountTitle: "Allah Ditta (اللہ دتہ)",
+      accountNumber: "0304-7809156",
+      rawNumber: "03047809156"
     },
     bank: {
       name: "بینک اکاؤنٹ",
       bankName: "Meezan Bank Limited",
-      accountTitle: "کورس فاؤنڈیشن",
+      accountTitle: "Allah Ditta",
       accountNumber: "01010102030405"
     }
   }
@@ -59,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchConfig();
   setupEventListeners();
   setupCnicFormatter();
+  startRecentAdmissionsTicker();
 });
 
 // Fetch configuration from backend if online
@@ -75,7 +78,6 @@ async function fetchConfig() {
       updateUiWithConfig();
     }
   } catch (err) {
-    // Running in static GitHub Pages mode or offline
     updateUiWithConfig();
   }
 }
@@ -99,16 +101,16 @@ function updateUiWithConfig() {
     if (ep) {
       const elTitle = document.getElementById('easypaisaTitle');
       const elNum = document.getElementById('easypaisaNumber');
-      if (elTitle) elTitle.textContent = ep.accountTitle;
-      if (elNum) elNum.textContent = ep.accountNumber;
+      if (elTitle) elTitle.textContent = ep.accountTitle || 'Allah Ditta (اللہ دتہ)';
+      if (elNum) elNum.textContent = ep.accountNumber || '0328-8765822';
     }
 
     const jc = appConfig.paymentAccounts.jazzcash;
     if (jc) {
       const elTitle = document.getElementById('jazzcashTitle');
       const elNum = document.getElementById('jazzcashNumber');
-      if (elTitle) elTitle.textContent = jc.accountTitle;
-      if (elNum) elNum.textContent = jc.accountNumber;
+      if (elTitle) elTitle.textContent = jc.accountTitle || 'Allah Ditta (اللہ دتہ)';
+      if (elNum) elNum.textContent = jc.accountNumber || '0304-7809156';
     }
 
     const bk = appConfig.paymentAccounts.bank;
@@ -117,7 +119,7 @@ function updateUiWithConfig() {
       const elTitle = document.getElementById('bankTitle');
       const elNum = document.getElementById('bankNumber');
       if (elBankName) elBankName.textContent = bk.bankName || 'بینک اکاؤنٹ';
-      if (elTitle) elTitle.textContent = bk.accountTitle;
+      if (elTitle) elTitle.textContent = bk.accountTitle || 'Allah Ditta';
       if (elNum) elNum.textContent = `A/C: ${bk.accountNumber}`;
     }
   }
@@ -161,7 +163,7 @@ function setupCnicFormatter() {
   if (!cnicInput) return;
 
   cnicInput.addEventListener('input', (e) => {
-    let val = e.target.value.replace(/\D/g, ''); // strip non-digits
+    let val = e.target.value.replace(/\D/g, '');
     if (val.length > 13) val = val.substring(0, 13);
 
     let formatted = '';
@@ -211,7 +213,6 @@ window.previewImage = function (input, imgId, placeholderId, nameId) {
   const nameLabel = document.getElementById(nameId);
 
   if (file) {
-    // Security: Check file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
       alert('سیکیورٹی وارننگ: فائل کا سائز 5MB سے زیادہ نہیں ہونا چاہیے۔');
       input.value = '';
@@ -274,6 +275,68 @@ function showToast(msg) {
   }
 }
 
+// Audio Chime Synthesizer for instant success notification
+function playSuccessChime() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc1.type = 'sine';
+    osc2.type = 'triangle';
+
+    osc1.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+    osc1.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
+
+    osc2.frequency.setValueAtTime(392, ctx.currentTime); // G4
+    osc2.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.25); // C6
+
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc1.start();
+    osc2.start();
+    osc1.stop(ctx.currentTime + 0.6);
+    osc2.stop(ctx.currentTime + 0.6);
+  } catch (e) {}
+}
+
+// Show Prominent Top Alert Notification
+function showTopAlertNotification(data) {
+  playSuccessChime();
+  const bar = document.getElementById('topNotificationBar');
+  const title = document.getElementById('topNotificationTitle');
+  const sub = document.getElementById('topNotificationSubtitle');
+  if (!bar) return;
+
+  const name = escapeHtml(data.fullName);
+  const regNo = escapeHtml(data.regNo);
+  const paidFee = data.feeDetails ? Number(data.feeDetails.paidFee).toLocaleString('ur-PK') : '2,500';
+
+  if (title) {
+    title.innerHTML = `🔔 <b class="text-amber-300 font-black">نیا داخلہ الرٹ!</b> ${name} کی داخلہ درخواست موصول ہو گئی ہے!`;
+  }
+  if (sub) {
+    sub.innerHTML = `رجسٹریشن نمبر: <b class="font-mono bg-white/20 px-2 py-0.5 rounded text-white">${regNo}</b> | ادا شدہ فیس: <b>${paidFee} روپے</b> | واٹس ایپ پر ایڈمن کو رسید بھیج کر سیٹ کنفرم کروائیں۔`;
+  }
+
+  bar.classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+window.closeTopNotification = function() {
+  const bar = document.getElementById('topNotificationBar');
+  if (bar) bar.classList.add('hidden');
+};
+
 // Show alert banner
 function showAlert(message, type = 'error') {
   const alertEl = document.getElementById('formAlert');
@@ -303,7 +366,7 @@ function fileToDataUrl(file) {
   });
 }
 
-// Handle Form Submit with Strict Security Validations
+// Handle Form Submit with Top Alert & Audio Chime
 async function handleFormSubmit(e) {
   e.preventDefault();
 
@@ -312,7 +375,6 @@ async function handleFormSubmit(e) {
   const submitBtnText = document.getElementById('submitBtnText');
   const submitSpinner = document.getElementById('submitSpinner');
 
-  // Basic inputs
   const fullName = document.getElementById('fullName')?.value.trim();
   const fatherName = document.getElementById('fatherName')?.value.trim();
   const cnic = document.getElementById('cnic')?.value.trim();
@@ -336,28 +398,24 @@ async function handleFormSubmit(e) {
     return;
   }
 
-  // Security: Check for dangerous characters
   if (/[<>]/.test(fullName) || /[<>]/.test(fatherName) || /[<>]/.test(city)) {
     showAlert('سیکیورٹی وارننگ: نام اور شہر میں غیر قانونی علامات (< >) استعمال نہیں ہو سکتیں۔');
     return;
   }
 
-  // Validate CNIC (13 digits)
   const cleanCnic = cnic.replace(/\D/g, '');
   if (cleanCnic.length !== 13) {
     showAlert('شناختی کارڈ یا ب فارم نمبر 13 ہندسوں پر مشتمل ہونا لازمی ہے۔');
     return;
   }
 
-  // Validate Pakistani Phone
   const cleanPhone = phone.replace(/\D/g, '');
   if (cleanPhone.length < 10 || cleanPhone.length > 12) {
     showAlert('برائے مہربانی درست موبائل / واٹس ایپ نمبر درج کریں۔');
     return;
   }
 
-  // File Security Check
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  const MAX_FILE_SIZE = 5 * 1024 * 1024;
   const ALLOWED_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.pdf'];
 
   function checkFileSafe(f) {
@@ -368,7 +426,7 @@ async function handleFormSubmit(e) {
   }
 
   if (!studentPhoto || !checkFileSafe(studentPhoto)) {
-    showAlert('طالب علم کی پاسپورٹ سائز تصویر اپلوڈ کرنا لازمی ہے (زیادہ سے زیادہ سائز 5MB، فارمیٹ: JPG/PNG)۔');
+    showAlert('طالب علم کی پاسپورٹ سائز تصویر اپلوڈ کرنا لازمی ہے (زیادہ سے زیادہ 5MB، فارمیٹ: JPG/PNG)۔');
     return;
   }
 
@@ -392,7 +450,6 @@ async function handleFormSubmit(e) {
     return;
   }
 
-  // Set loading state
   submitBtn.disabled = true;
   submitBtnText.textContent = 'درخواست جمع ہو رہی ہے، برائے مہربانی انتظار فرمائیں...';
   submitSpinner.classList.remove('hidden');
@@ -405,7 +462,6 @@ async function handleFormSubmit(e) {
   try {
     let savedAdmission = null;
 
-    // Try Node.js backend if reachable
     try {
       const formData = new FormData(form);
       const res = await fetch('/api/admissions', {
@@ -417,14 +473,9 @@ async function handleFormSubmit(e) {
         if (data.success && data.admission) {
           savedAdmission = data.admission;
         }
-      } else if (res.status === 429) {
-        const data = await res.json();
-        showAlert(data.message || 'بہت زیادہ درخواستیں بھیجی جا چکی ہیں، کچھ دیر بعد کوشش کریں۔');
-        return;
       }
     } catch (apiErr) {}
 
-    // Fallback: Client-side local storage handling for static GitHub Pages
     if (!savedAdmission) {
       const photoBase64 = await fileToDataUrl(studentPhoto);
       const receiptBase64 = await fileToDataUrl(paymentReceipt);
@@ -479,7 +530,10 @@ async function handleFormSubmit(e) {
       }
     }
 
-    showAlert('آپ کی داخلہ درخواست کامیابی سے موصول ہو گئی ہے! نیچے دی گئی سلپ محفوظ کریں اور واٹس ایپ پر ایڈمن کو رسید بھیجیں۔', 'success');
+    // Trigger Top Alert Notification with Audio Chime!
+    showTopAlertNotification(savedAdmission);
+
+    showAlert('آپ کی داخلہ درخواست کامیابی سے موصول ہو گئی ہے! اوپر الرٹ اور نیچے دی گئی سلپ دیکھیں۔', 'success');
     form.reset();
     resetImagePreviews();
     calculateFee();
@@ -520,7 +574,7 @@ function resetImagePreviews() {
   if (madrassaArea) madrassaArea.classList.add('hidden');
 }
 
-// Display Digital Admission Slip Modal (XSS Secured)
+// Display Digital Admission Slip Modal
 function showAdmissionSlip(adm) {
   const modal = document.getElementById('admissionSlipModal');
   if (!modal) return;
@@ -556,14 +610,14 @@ function showAdmissionSlip(adm) {
   document.getElementById('slipPaidFee').textContent = `${(fee.paidFee || 5000).toLocaleString('ur-PK')} روپے`;
   document.getElementById('slipTid').textContent = escapeHtml(adm.transactionId || 'دستیاب نہیں');
 
-  // WhatsApp share link
-  const supportPhone = (appConfig.supportPhone || '03001234567').replace(/\D/g, '');
+  // WhatsApp share link - Directed to 03047809156
+  const targetWhatsapp = '03047809156';
   const shareMsg = encodeURIComponent(
-    `السلام علیکم!\nمیں نے آن لائن داخلہ فارم پر کر دیا ہے۔\nنام: ${adm.fullName}\nوالد کا نام: ${adm.fatherName}\nشناختی کارڈ: ${adm.cnic}\nرجسٹریشن نمبر: ${adm.regNo}\nفون نمبر: ${adm.phone}\nشہر: ${adm.city}\nمدرسہ رعایت: ${adm.isMadrassaStudent ? 'ہاں (50% ڈسکاؤنٹ)' : 'نہیں'}\nادا شدہ فیس: ${fee.paidFee || 0} روپے\nٹرانزیکشن آئی ڈی: ${adm.transactionId || '-'}\n\nبرائے مہربانی فیس تصدیق کر کے واٹس ایپ گروپ میں شامل فرما لیں۔`
+    `السلام علیکم!\nمیں نے آن لائن کورس داخلہ فارم پر کر دیا ہے۔\n\nطالب علم کا نام: ${adm.fullName}\nوالد کا نام: ${adm.fatherName}\nشناختی کارڈ: ${adm.cnic}\nرجسٹریشن نمبر: ${adm.regNo}\nموبائل نمبر: ${adm.phone}\nشہر: ${adm.city}\nمدرسہ طالب علم: ${adm.isMadrassaStudent ? 'ہاں (50% رعایت لاگو)' : 'نہیں'}\nادا شدہ فیس: ${fee.paidFee || 0} روپے\nایزی پیسہ ٹرانزیکشن آئی ڈی: ${adm.transactionId || '-'}\n\nبرائے مہربانی فیس تصدیق کر کے مجھے کلاس گروپ میں شامل فرما لیں۔`
   );
   const waBtn = document.getElementById('slipWhatsappShare');
   if (waBtn) {
-    waBtn.href = `https://wa.me/92${supportPhone.replace(/^0/, '')}?text=${shareMsg}`;
+    waBtn.href = `https://wa.me/92${targetWhatsapp.replace(/^0/, '')}?text=${shareMsg}`;
   }
 
   modal.classList.remove('hidden');
@@ -574,3 +628,32 @@ window.closeSlipModal = function () {
   const modal = document.getElementById('admissionSlipModal');
   if (modal) modal.classList.add('hidden');
 };
+
+// Live Recent Admissions Ticker (Professional Social Proof)
+function startRecentAdmissionsTicker() {
+  const sampleNames = [
+    { name: 'محمد حمزہ', city: 'لاہور', discount: '50% مدرسہ رعایت' },
+    { name: 'عثمان غنی', city: 'فیصل آباد', discount: '50% مدرسہ رعایت' },
+    { name: 'عبدالرحمٰن', city: 'کراچی', discount: '50% مدرسہ رعایت' },
+    { name: 'حافظ بلال', city: 'راولپنڈی', discount: '50% مدرسہ رعایت' },
+    { name: 'محمد یاسین', city: 'ملتان', discount: '50% مدرسہ رعایت' }
+  ];
+
+  let index = 0;
+  setInterval(() => {
+    const ticker = document.getElementById('liveTickerToast');
+    if (!ticker) return;
+
+    const student = sampleNames[index % sampleNames.length];
+    index++;
+
+    document.getElementById('tickerText').innerHTML = `<b>${student.name}</b> نے ${student.city} سے کورس میں داخلہ لیا (${student.discount})`;
+    ticker.classList.remove('hidden', 'translate-y-10', 'opacity-0');
+    ticker.classList.add('translate-y-0', 'opacity-100');
+
+    setTimeout(() => {
+      ticker.classList.add('translate-y-10', 'opacity-0');
+      setTimeout(() => ticker.classList.add('hidden'), 500);
+    }, 5000);
+  }, 16000);
+}

@@ -40,6 +40,33 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
 
+  <!-- TOP LIVE NOTIFICATION / ALERT BAR (Displays with chime when someone applies) -->
+  <div id="topNotificationBar" class="hidden fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-emerald-600 via-teal-700 to-emerald-800 text-white shadow-2xl py-3 px-4 border-b-2 border-amber-400 transform transition-all duration-300">
+    <div class="max-w-5xl mx-auto flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-amber-400 text-slate-900 flex items-center justify-center font-black text-xl shadow-lg shrink-0">
+          🔔
+        </div>
+        <div>
+          <div id="topNotificationTitle" class="font-bold text-sm sm:text-base leading-tight text-white">
+            نیا داخلہ الرٹ! آپ کی داخلہ درخواست کامیابی سے موصول ہو گئی ہے۔
+          </div>
+          <div id="topNotificationSubtitle" class="text-xs text-emerald-100 mt-0.5 opacity-90">
+            رجسٹریشن نمبر اور فیس سلپ جاری کر دی گئی ہے، واٹس ایپ پر رابطہ کریں۔
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <a href="https://wa.me/923047809156" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white text-emerald-800 font-bold text-xs hover:bg-emerald-50 transition-all shadow">
+          <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i> 0304-7809156
+        </a>
+        <button type="button" onclick="closeTopNotification()" class="w-8 h-8 rounded-full bg-black/20 hover:bg-black/30 text-white flex items-center justify-center text-sm transition-all" title="بند کریں">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Top Navbar -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -48,14 +75,22 @@
           <i class="fa-solid fa-graduation-cap text-lg"></i>
         </div>
         <div>
-          <h1 id="navCourseTitle" class="font-bold text-lg text-slate-800 tracking-tight">کورس داخلہ پورٹل</h1>
+          <h1 id="navCourseTitle" class="font-bold text-base sm:text-lg text-slate-800 tracking-tight">کورس داخلہ پورٹل</h1>
           <p class="text-xs text-slate-500">آن لائن ایڈمیشن اور رجسٹریشن فارم</p>
         </div>
       </div>
       <div class="flex items-center space-x-2 space-x-reverse">
-        <a href="admin.html" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-brand-600 bg-slate-100 hover:bg-brand-50 px-3 py-1.5 rounded-lg transition-all border border-slate-200">
+        <!-- Direct Official WhatsApp Link -->
+        <a href="https://wa.me/923047809156?text=السلام علیکم! مجھے کورس کے بارے میں معلومات چاہیے" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200 transition-all shadow-sm">
+          <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
+          <span class="hidden sm:inline">واٹس ایپ:</span>
+          <span class="font-mono dir-ltr">0304-7809156</span>
+        </a>
+
+        <!-- Admin Portal Link -->
+        <a href="admin.html" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-brand-600 bg-slate-100 hover:bg-brand-50 px-3 py-1.5 rounded-lg transition-all border border-slate-200">
           <i class="fa-solid fa-user-shield"></i>
-          <span>ایڈمن پینل</span>
+          <span class="hidden sm:inline">ایڈمن</span>
         </a>
       </div>
     </div>
@@ -338,19 +373,23 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="paymentAccountsContainer">
               <!-- Dynamically populated or fallback -->
               
-              <!-- Easypaisa Card -->
-              <div class="p-4 rounded-2xl border border-slate-200 bg-white hover:border-emerald-500 transition-all card-shadow">
+              <!-- Easypaisa Card (Highlighted) -->
+              <div class="p-4 rounded-2xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50/60 to-white card-shadow relative overflow-hidden">
+                <div class="absolute -left-7 -top-7 w-16 h-16 bg-emerald-500/10 rounded-full"></div>
                 <div class="flex items-center justify-between mb-2">
-                  <span class="font-bold text-sm text-slate-800 flex items-center gap-1.5">
-                    <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+                  <span class="font-bold text-sm text-emerald-900 flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
                     ایزی پیسہ (Easypaisa)
                   </span>
-                  <button type="button" onclick="copyText('03001234567')" class="text-xs text-brand-600 hover:underline">
+                  <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">تجویز کردہ</span>
+                </div>
+                <div class="text-xs text-slate-600 mb-1">اکاؤنٹ ٹائٹل: <b class="text-slate-900" id="easypaisaTitle">Allah Ditta (اللہ دتہ)</b></div>
+                <div class="flex items-center justify-between mt-2 pt-2 border-t border-emerald-100">
+                  <div class="text-lg font-bold font-mono text-emerald-800 tracking-wider" id="easypaisaNumber">0328-8765822</div>
+                  <button type="button" onclick="copyText('03288765822')" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-2.5 py-1 rounded-lg transition-all">
                     <i class="fa-regular fa-copy"></i> کاپی
                   </button>
                 </div>
-                <div class="text-xs text-slate-500 mb-1">اکاؤنٹ ٹائٹل: <b class="text-slate-700" id="easypaisaTitle">کورس ایڈمن</b></div>
-                <div class="text-base font-bold font-mono text-slate-800 tracking-wider" id="easypaisaNumber">0300-1234567</div>
               </div>
 
               <!-- JazzCash Card -->
@@ -360,12 +399,15 @@
                     <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
                     جاز کیش (JazzCash)
                   </span>
-                  <button type="button" onclick="copyText('03217654321')" class="text-xs text-red-600 hover:underline">
+                  <span class="text-[10px] text-slate-400">موبائل اکاؤنٹ</span>
+                </div>
+                <div class="text-xs text-slate-600 mb-1">اکاؤنٹ ٹائٹل: <b class="text-slate-800" id="jazzcashTitle">Allah Ditta (اللہ دتہ)</b></div>
+                <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
+                  <div class="text-base font-bold font-mono text-slate-800 tracking-wider" id="jazzcashNumber">0304-7809156</div>
+                  <button type="button" onclick="copyText('03047809156')" class="inline-flex items-center gap-1 text-xs text-red-600 hover:underline">
                     <i class="fa-regular fa-copy"></i> کاپی
                   </button>
                 </div>
-                <div class="text-xs text-slate-500 mb-1">اکاؤنٹ ٹائٹل: <b class="text-slate-700" id="jazzcashTitle">کورس ایڈمن</b></div>
-                <div class="text-base font-bold font-mono text-slate-800 tracking-wider" id="jazzcashNumber">0321-7654321</div>
               </div>
 
               <!-- Bank Transfer Card -->
@@ -380,7 +422,7 @@
                   </button>
                 </div>
                 <div class="text-xs text-slate-500 mb-0.5"><span id="bankName">Meezan Bank</span></div>
-                <div class="text-xs text-slate-500 mb-1">ٹائٹل: <b class="text-slate-700" id="bankTitle">کورس فاؤنڈیشن</b></div>
+                <div class="text-xs text-slate-500 mb-1">ٹائٹل: <b class="text-slate-700" id="bankTitle">Allah Ditta</b></div>
                 <div class="text-xs font-mono font-bold text-slate-800 tracking-tight" id="bankNumber">A/C: 01010102030405</div>
               </div>
 
@@ -561,6 +603,22 @@
 
     </div>
   </div>
+
+  <!-- Live Admissions Social Proof Toast -->
+  <div id="liveTickerToast" class="hidden fixed bottom-20 right-5 z-40 bg-slate-900/95 text-white backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-2.5 text-xs transition-all duration-500 max-w-sm">
+    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
+    <span id="tickerText">محمد حمزہ نے لاہور سے داخلہ لیا (50% رعایت منظور)</span>
+  </div>
+
+  <!-- Floating WhatsApp Helpline Widget (Direct 03047809156) -->
+  <a href="https://wa.me/923047809156?text=السلام علیکم! مجھے آن لائن کورس داخلہ کے بارے میں معلومات چاہیے" target="_blank" rel="noopener noreferrer" 
+     class="fixed bottom-5 left-5 z-40 bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-700 hover:to-teal-700 text-white rounded-full p-3.5 sm:px-4 sm:py-3 shadow-2xl shadow-emerald-600/40 flex items-center gap-2.5 transition-all transform hover:scale-105 group border-2 border-white/90">
+    <i class="fa-brands fa-whatsapp text-2xl text-white animate-pulse"></i>
+    <div class="hidden sm:block text-right">
+      <div class="text-[10px] text-emerald-100 font-bold leading-tight">ہیلپ لائن واٹس ایپ</div>
+      <div class="font-bold text-xs font-mono dir-ltr text-right">0304-7809156</div>
+    </div>
+  </a>
 
   <!-- Toast Notification -->
   <div id="toast" class="hidden fixed bottom-5 right-5 z-50 bg-slate-900 text-white text-xs sm:text-sm px-4 py-3 rounded-xl shadow-xl flex items-center gap-2">

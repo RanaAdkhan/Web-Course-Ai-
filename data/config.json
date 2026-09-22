@@ -4,28 +4,30 @@
   "courseFee": 5000,
   "madrassaDiscountPercent": 50,
   "adminPassword": "admin123",
-  "supportPhone": "0300-1234567",
-  "whatsappGroup": "https://chat.whatsapp.com/example",
+  "supportPhone": "0304-7809156",
+  "whatsappNumber": "03047809156",
   "paymentAccounts": {
     "easypaisa": {
       "name": "ایزی پیسہ (Easypaisa)",
-      "accountTitle": "کورس ایڈمن",
-      "accountNumber": "03001234567",
-      "instructions": "ایزی پیسہ ایپ یا قریبی دکان سے اس نمبر پر رقم بھیج کر سکرین شاٹ محفوظ کر لیں۔"
+      "accountTitle": "Allah Ditta (اللہ دتہ)",
+      "accountNumber": "0328-8765822",
+      "rawNumber": "03288765822",
+      "instructions": "ایزی پیسہ ایپ یا قریبی فرنچائز / دکان سے اس نمبر پر فیس بھیج کر ٹرانزیکشن رسید حاصل کریں۔"
     },
     "jazzcash": {
-      "name": "جاز کیش (JazzCash)",
-      "accountTitle": "کورس ایڈمن",
-      "accountNumber": "03217654321",
-      "instructions": "جاز کیش ایپ یا قریبی دکان سے رقم بھیج کر ٹرانزیکشن آئی ڈی اور رسید حاصل کریں۔"
+      "name": "جاز کیش / واٹس ایپ",
+      "accountTitle": "Allah Ditta (اللہ دتہ)",
+      "accountNumber": "0304-7809156",
+      "rawNumber": "03047809156",
+      "instructions": "جاز کیش یا واٹس ایپ کے ذریعے تصدیق کے لیے رابطہ کریں۔"
     },
     "bank": {
-      "name": "بینک الفلاح / میزان بینک",
+      "name": "بینک ٹرانسفر",
       "bankName": "Meezan Bank Limited",
-      "accountTitle": "کورس فاؤنڈیشن",
+      "accountTitle": "Allah Ditta",
       "accountNumber": "01010102030405",
       "iban": "PK00MEZN0001010102030405",
-      "instructions": "کسی بھی بینکنگ ایپ سے رقم ٹرانسفر کریں اور تصدیقی سلپ اپلوڈ کریں۔"
+      "instructions": "کسی بھی بینکنگ ایپ سے فیس ٹرانسفر کر کے سلپ منسلک کریں۔"
     }
   }
 }

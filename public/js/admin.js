@@ -6,19 +6,19 @@ let currentConfig = {
   courseFee: 5000,
   madrassaDiscountPercent: 50,
   adminPassword: "admin123",
-  supportPhone: "0300-1234567",
+  supportPhone: "0304-7809156",
   paymentAccounts: {
     easypaisa: {
-      accountTitle: "کورس ایڈمن",
-      accountNumber: "03001234567"
+      accountTitle: "Allah Ditta (اللہ دتہ)",
+      accountNumber: "0328-8765822"
     },
     jazzcash: {
-      accountTitle: "کورس ایڈمن",
-      accountNumber: "03217654321"
+      accountTitle: "Allah Ditta (اللہ دتہ)",
+      accountNumber: "0304-7809156"
     },
     bank: {
       bankName: "Meezan Bank Limited",
-      accountTitle: "کورس فاؤنڈیشن",
+      accountTitle: "Allah Ditta",
       accountNumber: "01010102030405"
     }
   }
@@ -143,7 +143,28 @@ window.adminLogout = function () {
   }
 };
 
-// Fetch all admissions
+let previousAdmissionsCount = null;
+
+function playAdminAlertChime() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(659.25, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.5);
+  } catch (e) {}
+}
+
+// Fetch all admissions (with live alert detection)
 async function loadAdmissions() {
   let loaded = false;
   try {
@@ -169,9 +190,30 @@ async function loadAdmissions() {
     }
   }
 
+  // Check if a new application has arrived
+  if (previousAdmissionsCount !== null && allAdmissions.length > previousAdmissionsCount) {
+    const newStudent = allAdmissions[0];
+    playAdminAlertChime();
+    const alertBar = document.getElementById('adminTopAlertBar');
+    const alertText = document.getElementById('adminAlertText');
+    if (alertBar && alertText) {
+      alertText.innerHTML = `🔔 <b class="text-slate-950 font-black">نیا داخلہ الرٹ!</b> <b>${escapeHtml(newStudent.fullName)}</b> نے نیا داخلہ فارم جمع کروایا ہے (رجسٹریشن: <span class="font-mono">${escapeHtml(newStudent.regNo)}</span> | فیس: <b>${newStudent.feeDetails ? Number(newStudent.feeDetails.paidFee).toLocaleString('ur-PK') : 0} روپے</b>)`;
+      alertBar.classList.remove('hidden');
+    }
+    showToast(`نیا داخلہ موصول ہوا: ${newStudent.fullName}`);
+  }
+  previousAdmissionsCount = allAdmissions.length;
+
   updateDashboardStats();
   renderAdmissionsTable(allAdmissions);
 }
+
+// Auto poll for new admissions every 10 seconds
+setInterval(() => {
+  if (currentAdminToken && !document.getElementById('dashboardView').classList.contains('hidden')) {
+    loadAdmissions();
+  }
+}, 10000);
 
 // Fetch portal config
 async function loadConfig() {
