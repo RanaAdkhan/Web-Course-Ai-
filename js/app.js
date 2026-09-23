@@ -5,6 +5,7 @@ let appConfig = {
   courseDuration: "3 ماہ",
   courseFee: 5000,
   madrassaDiscountPercent: 50,
+  totalSeats: 30,
   requiresLaptop: true,
   specialOffer: "پہلے 5 سٹوڈنٹس کو جیمینائی پرو (Gemini Pro) بالکل مفت دیا جائے گا!",
   supportPhone: "0304-7809156",
@@ -70,6 +71,17 @@ async function fetchConfig() {
   } catch (err) {
     updateUiWithConfig();
   }
+
+  // Also query live admissions count from backend if available
+  try {
+    const admRes = await fetch('/api/admissions');
+    if (admRes.ok) {
+      const admData = await admRes.json();
+      if (admData && Array.isArray(admData.admissions)) {
+        updateSeatsCounter(admData.admissions.length);
+      }
+    }
+  } catch (e) {}
 }
 
 // Update UI elements with dynamic config
@@ -98,6 +110,53 @@ function updateUiWithConfig() {
 
   // Recalculate fee display
   calculateFee();
+
+  // Update Seats Counter dynamically
+  updateSeatsCounter();
+}
+
+// Dynamic Real-Time Seats Counter (Starts from 0 and fills up as students register)
+function updateSeatsCounter(customCount = null) {
+  const totalSeats = Number(appConfig.totalSeats) || 30;
+
+  let admissionsCount = 0;
+  if (customCount !== null && typeof customCount === 'number') {
+    admissionsCount = customCount;
+  } else {
+    try {
+      const local = JSON.parse(localStorage.getItem('admissions') || '[]');
+      if (Array.isArray(local)) {
+        admissionsCount = local.length;
+      }
+    } catch (e) {
+      admissionsCount = 0;
+    }
+  }
+
+  const seatsCountText = document.getElementById('seatsCountText');
+  const seatsProgressBar = document.getElementById('seatsProgressBar');
+  const seatsRemainingNotice = document.getElementById('seatsRemainingNotice');
+
+  const remaining = Math.max(0, totalSeats - admissionsCount);
+  const percentage = Math.min(100, Math.round((admissionsCount / totalSeats) * 100));
+
+  if (seatsCountText) {
+    seatsCountText.textContent = `${admissionsCount} / ${totalSeats} نشستیں مکمل`;
+  }
+
+  if (seatsProgressBar) {
+    seatsProgressBar.style.width = `${percentage}%`;
+  }
+
+  if (seatsRemainingNotice) {
+    if (admissionsCount === 0) {
+      seatsRemainingNotice.textContent = `داخلے ابھی شروع ہوئے ہیں — کل ${totalSeats} نشستیں ہیں، سب سے پہلے داخلہ لے کر اپنی سیٹ محفوظ کریں!`;
+    } else if (remaining > 0) {
+      seatsRemainingNotice.textContent = `اب تک ${admissionsCount} طلباء داخل ہو چکے ہیں — صرف ${remaining} نشستیں باقی ہیں!`;
+    } else {
+      seatsRemainingNotice.textContent = `تمام ${totalSeats} نشستیں مکمل ہو چکی ہیں!`;
+    }
+  }
 }
 
 // Setup Event Listeners
@@ -538,6 +597,7 @@ async function handleFormSubmit(e) {
     form.reset();
     resetImagePreviews();
     calculateFee();
+    updateSeatsCounter();
 
     // Show digital slip
     showAdmissionSlip(savedAdmission);

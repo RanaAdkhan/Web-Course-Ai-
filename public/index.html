@@ -205,17 +205,17 @@
         </div>
       </div>
 
-      <!-- Urgency Seats Counter (Simple) -->
+      <!-- Dynamic Seats Counter (Real-time live count) -->
       <div class="max-w-md mx-auto bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm mb-6">
         <div class="flex items-center justify-between text-xs font-bold mb-1.5 px-1">
           <span class="text-amber-800">نشستوں کی صورتحال:</span>
-          <span class="text-emerald-700 font-mono font-bold">21 / 30 نشستیں مکمل</span>
+          <span class="text-emerald-700 font-mono font-bold" id="seatsCountText">0 / 30 نشستیں مکمل</span>
         </div>
         <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-          <div class="h-full bg-emerald-600 rounded-full w-[70%]"></div>
+          <div id="seatsProgressBar" class="h-full bg-emerald-600 rounded-full transition-all duration-700" style="width: 0%;"></div>
         </div>
-        <div class="text-xs text-slate-600 font-bold text-center mt-1.5">
-          صرف 9 نشستیں باقی ہیں — نیچے فارم پر کر کے داخلہ محفوظ کریں۔
+        <div id="seatsRemainingNotice" class="text-xs text-slate-600 font-bold text-center mt-1.5">
+          داخلے ابھی شروع ہوئے ہیں — کل 30 نشستیں ہیں، سب سے پہلے داخلہ لے کر اپنی سیٹ محفوظ کریں!
         </div>
       </div>
 
@@ -796,6 +796,6 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/app.js?v=7"></script>
+  <script src="js/app.js?v=8"></script>
 </body>
 </html>
