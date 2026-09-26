@@ -1,8 +1,10 @@
 // Student Admission Form Logic (Professional Edition)
 let appConfig = {
   courseTitle: "آن لائن ویب و موبائل ایپ ڈویلپمنٹ کورس (Web & App Development)",
-  courseDescription: "شاندار مستقبل کی طرف ایک قدم - مکمل ویب سائٹ و موبائل ایپ ڈویلپمنٹ، جدید اے آئی اور اسپوکن انگلش پریکٹیکل کورس (دورانیہ: 3 ماہ | لیپ ٹاپ لازمی | پہلے 5 طلباء کو Gemini Pro فری)",
+  courseDescription: "مکمل ویب سائٹ و موبائل ایپ ڈویلپمنٹ مع جدید اے آئی اور اسپوکن انگلش پریکٹیکل کورس (آغاز: 20 ستمبر | کلاس ٹائم: مغرب کے بعد | دورانیہ: 3 ماہ)",
   courseDuration: "3 ماہ",
+  courseStartDate: "20 ستمبر سے باقاعدہ آغاز",
+  classTiming: "کلاسز کا وقت مغرب کے بعد کا طے کریں گے",
   courseFee: 5000,
   madrassaDiscountPercent: 50,
   totalSeats: 30,

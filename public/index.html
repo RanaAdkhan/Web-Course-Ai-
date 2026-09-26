@@ -62,7 +62,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/style.css?v=9">
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased selection:bg-emerald-500 selection:text-white">
 
@@ -70,10 +70,10 @@
   <div class="bg-emerald-800 text-white py-2 px-3 text-center text-xs sm:text-sm font-bold shadow-sm">
     <div class="max-w-5xl mx-auto flex items-center justify-center gap-2 sm:gap-4 flex-wrap">
       <span class="inline-flex items-center gap-1.5 bg-emerald-950/60 text-emerald-200 px-3 py-0.5 rounded-full text-xs font-bold">
-        📢 نیا بیچ
+        📢 باقاعدہ آغاز: 20 ستمبر
       </span>
       <span>
-        آن لائن داخلے کھلے ہیں! پہلے 5 سٹوڈنٹس کے لیے <b>Gemini Pro بالکل مفت</b> — محدود نشستیں!
+        کلاسز کا وقت <b>مغرب کی نماز کے بعد</b> طے کریں گے — پہلے 5 سٹوڈنٹس کے لیے <b>Gemini Pro مفت</b>!
       </span>
       <a href="#admissionForm" class="bg-white text-emerald-900 hover:bg-emerald-50 px-3 py-0.5 rounded-lg text-xs font-bold transition-all shadow-sm">
         داخلہ فارم پر جائیں ↓
@@ -111,7 +111,7 @@
       <div class="flex items-center space-x-3 space-x-reverse">
         <a href="index.html" class="flex items-center space-x-3 space-x-reverse">
           <div class="w-12 h-12 rounded-xl bg-white p-1 border border-slate-200 shadow-sm flex items-center justify-center overflow-hidden">
-            <img src="images/logo.png?v=7" alt="GMAD TECH ACADEMY" class="w-full h-full object-contain">
+            <img src="images/logo.png?v=8" alt="GMAD TECH ACADEMY" class="w-full h-full object-contain">
           </div>
           <div>
             <h1 class="font-black text-base sm:text-lg text-slate-900 leading-none">GMAD TECH ACADEMY</h1>
@@ -157,9 +157,36 @@
       <h2 id="heroCourseTitle" class="urdu-title text-3xl sm:text-5xl font-black text-emerald-950 mb-2 leading-tight">
         آن لائن ویب و موبائل ایپ ڈویلپمنٹ کورس
       </h2>
-      <p id="heroCourseDesc" class="text-base sm:text-xl text-slate-700 font-bold mb-6 max-w-2xl mx-auto">
+      <p id="heroCourseDesc" class="text-base sm:text-xl text-slate-700 font-bold mb-5 max-w-2xl mx-auto">
         مکمل ویب سائٹ اور موبائل ایپ بنانا سیکھیں — 3 ماہ کا پریکٹیکل کورس مع جدید AI اور اسپوکن انگلش
       </p>
+
+      <!-- COURSE START DATE & TIMETABLE HIGHLIGHT CARD -->
+      <div class="mb-6 p-4 sm:p-5 rounded-2xl bg-white border-2 border-emerald-500 shadow-md max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-around gap-4 text-center sm:text-right">
+        <!-- Start Date -->
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-2xl shrink-0 shadow-sm">
+            <i class="fa-solid fa-calendar-check"></i>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 font-bold block">کورس آغاز کی تاریخ:</span>
+            <span class="text-base sm:text-xl font-black text-emerald-800">20 ستمبر سے باقاعدہ آغاز</span>
+          </div>
+        </div>
+
+        <div class="hidden sm:block w-px h-12 bg-slate-200"></div>
+
+        <!-- Class Timetable -->
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-2xl shrink-0 shadow-sm">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 font-bold block">کلاس کا ٹائم ٹیبل:</span>
+            <span class="text-base sm:text-lg font-black text-slate-900">مغرب کی نماز کے بعد کا وقت طے کریں گے</span>
+          </div>
+        </div>
+      </div>
 
       <!-- 4 Simple Clear Feature Badges -->
       <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mb-6">
@@ -220,7 +247,7 @@
       </div>
 
       <!-- Action Button to scroll down -->
-      <div>
+      <div class="mb-8">
         <a href="#admissionForm" class="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-base sm:text-lg shadow-md transition-all">
           <i class="fa-solid fa-pen-to-square"></i>
           <span>داخلہ فارم پر کریں</span>
@@ -228,10 +255,66 @@
         </a>
       </div>
 
-      <!-- Course Official Banner Image -->
-      <div class="mt-8 max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-md border-2 border-slate-200 bg-white">
-        <img src="images/banner.jpg" alt="آن لائن کورس بینر" class="w-full h-auto object-cover block">
-      </div>
+      <!-- ANIMATED FRONT SHOWCASE: MADRASSA STUDENTS CODING WEB & APPS ON LAPTOPS -->
+      <div class="mt-4 max-w-3xl mx-auto">
+        
+        <!-- Showcase Header -->
+        <div class="flex items-center justify-between px-2 mb-2 text-xs sm:text-sm font-bold text-slate-700">
+          <span class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>پریکٹیکل لائیو ماحول: طلباء لیپ ٹاپ پر ویب ایپ اور موبائل ایپ بناتے ہوئے</span>
+          </span>
+          <span class="text-emerald-700 font-mono text-xs hidden sm:inline">Web & App Coding Labs</span>
+        </div>
+
+        <!-- Main Photographic Showcase Frame with Animated Floating Badges -->
+        <div class="relative rounded-3xl overflow-hidden shadow-xl border-4 border-emerald-500/60 bg-slate-900 group">
+          <img src="images/students_coding.jpg?v=9" alt="مدارس کے طلباء لیپ ٹاپ پر کوڈنگ اور ایپ ڈویلپمنٹ سیکھتے ہوئے" class="w-full h-auto object-cover block group-hover:scale-[1.01] transition-transform duration-500">
+          
+          <!-- Floating Badge 1 (Top Left) -->
+          <div class="absolute top-3 sm:top-5 left-3 sm:left-5 bg-white/95 backdrop-blur-md border border-emerald-400 px-3 sm:px-4 py-2 rounded-2xl shadow-lg flex items-center gap-2.5 float-slow">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+            <div class="text-right">
+              <span class="text-[10px] text-slate-500 block leading-tight font-sans">Live Practicals</span>
+              <span class="text-xs sm:text-sm font-black text-emerald-950">ویب و موبائل ایپ کوڈنگ</span>
+            </div>
+          </div>
+
+          <!-- Floating Badge 2 (Bottom Right) -->
+          <div class="absolute bottom-3 sm:bottom-5 right-3 sm:right-5 bg-slate-900/95 backdrop-blur-md border border-slate-700 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl shadow-xl text-white flex items-center gap-2.5 float-reverse">
+            <i class="fa-solid fa-laptop-code text-emerald-400 text-lg sm:text-xl"></i>
+            <div class="text-right">
+              <div class="text-[10px] text-slate-300">طالب علم کا حقیقی پراجیکٹ</div>
+              <div class="text-xs sm:text-sm font-mono font-bold text-amber-300">HTML • CSS • JS • App</div>
+            </div>
+          </div>
+
+          <!-- Floating Badge 3 (Bottom Left) -->
+          <div class="absolute bottom-3 sm:bottom-5 left-3 sm:left-5 hidden sm:flex items-center gap-2 bg-emerald-700/90 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-md pulse-soft">
+            <i class="fa-solid fa-mosque text-emerald-200"></i>
+            <span>مدارس کے طلباء کے لیے آسان تدریس</span>
+          </div>
+        </div>
+
+        <!-- Real-Time Interactive Code Box Animation (Students Building Apps) -->
+        <div class="mt-4 bg-slate-900 rounded-2xl p-4 sm:p-5 text-left font-mono text-xs sm:text-sm text-slate-200 border border-slate-700 shadow-md dir-ltr overflow-hidden">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800">
+            <div class="flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+              <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+              <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+            </div>
+            <span class="text-[11px] text-slate-400 font-sans">students_coding_workspace.js — GMAD ACADEMY</span>
+          </div>
+          <div class="space-y-1.5 text-slate-300 leading-relaxed">
+            <p><span class="text-emerald-400">const</span> student = <span class="text-amber-300">"مدارس و کالج طلباء"</span>;</p>
+            <p><span class="text-cyan-400">async function</span> <span class="text-yellow-300">createWebAndMobileApp</span>() {</p>
+            <p class="pl-4"><span class="text-purple-400">await</span> learnCourse({ name: <span class="text-emerald-300">"Web & App Development"</span>, laptop: <span class="text-emerald-300">"ضروری"</span> });</p>
+            <p class="pl-4 text-emerald-400 font-sans text-xs">// 20 ستمبر سے باقاعدہ کلاسز • وقت: مغرب کی نماز کے بعد</p>
+            <p class="pl-4"><span class="text-cyan-400">console</span>.log(<span class="text-amber-300">"طلباء اب خود پروفیشنل ویب سائٹس اور ایپس بنا رہے ہیں! 🚀"</span>); <span class="typing-cursor font-black text-emerald-400">|</span></p>
+            <p>}</p>
+          </div>
+        </div>
 
     </div>
   </section>
@@ -275,14 +358,29 @@
             <input type="hidden" id="selectedCourse" name="selectedCourse" value="آن لائن ویب و ایپ ڈویلپمنٹ کورس (Web & App Development Course)">
 
             <!-- Course Note Banner -->
-            <div class="sm:col-span-2 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950">
-              <div class="font-bold text-sm flex items-center gap-2">
-                <i class="fa-solid fa-graduation-cap text-emerald-700"></i>
-                <span>منتخب کردہ کورس: آن لائن ویب و موبائل ایپ ڈویلپمنٹ (Web & App Development)</span>
+            <div class="sm:col-span-2 p-4 sm:p-5 rounded-2xl bg-emerald-50 border-2 border-emerald-300 text-emerald-950">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                <div class="font-black text-sm sm:text-base flex items-center gap-2">
+                  <i class="fa-solid fa-graduation-cap text-emerald-700 text-lg"></i>
+                  <span>کورس: آن لائن ویب و موبائل ایپ ڈویلپمنٹ (Web & App Development)</span>
+                </div>
+                <span class="text-xs font-bold bg-emerald-700 text-white px-3 py-1 rounded-full">
+                  3 ماہ پریکٹیکل
+                </span>
               </div>
-              <p class="text-xs text-emerald-800 mt-1">
-                اس کورس میں مکمل ویب سائٹ، موبائل ایپ، جدید AI اور انگلش بول چال شروع سے آخر تک پریکٹیکل سکھائی جائے گی۔
+              <p class="text-xs sm:text-sm text-emerald-900 leading-relaxed font-medium">
+                💻 اس کورس میں مکمل ویب سائٹ، موبائل ایپ، جدید AI اور اسپوکن انگلش شروع سے آخر تک پریکٹیکل سکھائی جائے گی۔
               </p>
+              <div class="mt-2.5 pt-2.5 border-t border-emerald-200/80 flex flex-wrap items-center gap-4 text-xs font-bold text-emerald-950">
+                <span class="flex items-center gap-1.5">
+                  <i class="fa-solid fa-calendar-check text-emerald-700"></i>
+                  <span>باقاعدہ آغاز: <b>20 ستمبر</b></span>
+                </span>
+                <span class="flex items-center gap-1.5">
+                  <i class="fa-solid fa-clock text-amber-700"></i>
+                  <span>کلاس ٹائم ٹیبل: <b>مغرب کی نماز کے بعد</b></span>
+                </span>
+              </div>
             </div>
 
             <!-- Full Name -->
@@ -796,6 +894,6 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/app.js?v=8"></script>
+  <script src="js/app.js?v=9"></script>
 </body>
 </html>
