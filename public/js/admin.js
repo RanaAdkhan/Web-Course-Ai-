@@ -330,8 +330,15 @@ function renderAdmissionsTable(list) {
         <!-- Full Name & Father Name -->
         <td class="py-3 px-4">
           <div class="font-bold text-slate-800">${escapedName}</div>
+          ${a.fullNameEn ? `<div class="font-mono text-xs text-blue-700 font-semibold">${escapeHtml(a.fullNameEn)}</div>` : ''}
           <div class="text-xs text-slate-500">ولد: ${escapedFather}</div>
-          ${a.selectedCourse ? `<div class="text-[10px] text-brand-700 font-semibold truncate max-w-[160px]" title="${escapeHtml(a.selectedCourse)}">${escapeHtml(a.selectedCourse)}</div>` : ''}
+          <div class="mt-1 flex items-center gap-1.5 flex-wrap">
+            <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold ${a.gender === 'female' ? 'bg-pink-100 text-pink-700 border border-pink-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}">
+              <i class="fa-solid ${a.gender === 'female' ? 'fa-venus' : 'fa-mars'} text-[9px] ml-0.5"></i>
+              ${a.gender === 'female' ? 'فی میل (عورت)' : 'میل (مرد)'}
+            </span>
+            ${a.selectedCourse ? `<span class="text-[10px] text-brand-700 font-semibold truncate max-w-[140px]" title="${escapeHtml(a.selectedCourse)}">${escapeHtml(a.selectedCourse)}</span>` : ''}
+          </div>
         </td>
 
         <!-- CNIC -->
@@ -491,8 +498,19 @@ window.viewApplicantDetails = function (id) {
 
       <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm w-full">
         <div>
-          <span class="text-slate-400 block text-[11px]">طالب علم کا نام</span>
+          <span class="text-slate-400 block text-[11px]">طالب علم کا نام (اردو)</span>
           <span class="font-bold text-slate-800 text-base">${name}</span>
+        </div>
+        <div>
+          <span class="text-slate-400 block text-[11px]">طالب علم کا نام (English)</span>
+          <span class="font-bold font-mono text-blue-700 text-base">${escapeHtml(adm.fullNameEn || '-')}</span>
+        </div>
+        <div>
+          <span class="text-slate-400 block text-[11px]">جنس (Gender)</span>
+          <span class="font-bold text-base ${adm.gender === 'female' ? 'text-pink-600' : 'text-blue-600'}">
+            <i class="fa-solid ${adm.gender === 'female' ? 'fa-venus' : 'fa-mars'} ml-1"></i>
+            ${escapeHtml(adm.genderUrdu || (adm.gender === 'female' ? 'فی میل (عورت)' : 'میل (مرد)'))}
+          </span>
         </div>
         <div>
           <span class="text-slate-400 block text-[11px]">والد کا نام</span>
