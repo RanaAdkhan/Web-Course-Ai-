@@ -189,25 +189,396 @@ function setupEventListeners() {
   }
 }
 
-// CNIC auto-formatter (12345-1234567-1)
-function setupCnicFormatter() {
-  const cnicInput = document.getElementById('cnic');
-  if (!cnicInput) return;
+// Strict Form Security System: اردو کی جگہ اردو، ریاضی کی جگہ ریاضی، انگلش کی جگہ انگلش
+function setupStrictFormSecurity() {
+  // Helper: Show or hide field error with clean UI feedback
+  function setFieldError(fieldId, isError, message = '') {
+    const input = document.getElementById(fieldId);
+    const errContainer = document.getElementById(`${fieldId}Error`);
+    const errText = document.getElementById(`${fieldId}ErrorText`);
 
-  cnicInput.addEventListener('input', (e) => {
-    let val = e.target.value.replace(/\D/g, '');
-    let formatted = '';
-    if (val.length > 0) {
-      formatted += val.substring(0, Math.min(5, val.length));
+    if (!input) return;
+
+    if (isError) {
+      input.classList.remove('input-valid', 'border-slate-300', 'border-emerald-500');
+      input.classList.add('input-error');
+      if (errContainer) {
+        errContainer.classList.remove('hidden');
+        if (errText && message) errText.textContent = message;
+      }
+    } else {
+      input.classList.remove('input-error');
+      if (input.value.trim().length > 0) {
+        input.classList.add('input-valid');
+      } else {
+        input.classList.remove('input-valid');
+      }
+      if (errContainer) {
+        errContainer.classList.add('hidden');
+      }
     }
-    if (val.length > 5) {
-      formatted += '-' + val.substring(5, Math.min(12, val.length));
-    }
-    if (val.length > 12) {
-      formatted += '-' + val.substring(12, 13);
-    }
-    e.target.value = formatted;
+  }
+
+  // 1. اردو کی جگہ صرف اردو (اردو والی جگہ ریاضی اور انگلش قبول نا کرے)
+  const urduFields = [
+    { id: 'fullName', label: 'طالب علم کا نام', minLen: 3, required: true },
+    { id: 'fatherName', label: 'والد کا نام', minLen: 3, required: true },
+    { id: 'city', label: 'شہر یا گاؤں کا نام', minLen: 2, required: true },
+    { id: 'madrassaName', label: 'جامعہ / مدرسے کا نام', minLen: 3, required: false },
+    { id: 'madrassaClass', label: 'موجودہ درجہ / کلاس', minLen: 2, required: false }
+  ];
+
+  const urduCharRegex = /^[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\s]$/;
+  const digitsRegex = /[0-9۰-۹٠-٩]/;
+  const englishRegex = /[a-zA-Z]/;
+
+  urduFields.forEach(({ id, label, minLen, required }) => {
+    const input = document.getElementById(id);
+    if (!input) return;
+
+    // Block Math/digits & English on keypress
+    input.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      if (['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
+        return;
+      }
+
+      if (e.key.length === 1) {
+        if (digitsRegex.test(e.key)) {
+          e.preventDefault();
+          setFieldError(id, true, `اردو کی جگہ ریاضی قبول نہیں ہے! "${label}" میں صرف اردو الفاظ لکھیں۔`);
+          setTimeout(() => {
+            if (input.value.trim().length >= minLen) setFieldError(id, false);
+          }, 3000);
+          return;
+        }
+
+        if (englishRegex.test(e.key)) {
+          e.preventDefault();
+          setFieldError(id, true, `اس خانے میں انگلش کی اجازت نہیں ہے! "${label}" میں صرف اردو الفاظ لکھیں۔`);
+          setTimeout(() => {
+            if (input.value.trim().length >= minLen) setFieldError(id, false);
+          }, 3000);
+          return;
+        }
+
+        if (!urduCharRegex.test(e.key)) {
+          e.preventDefault();
+          setFieldError(id, true, `"${label}" میں صرف اردو حروف درج کریں۔`);
+          setTimeout(() => {
+            if (input.value.trim().length >= minLen) setFieldError(id, false);
+          }, 3000);
+          return;
+        }
+      }
+    });
+
+    // Real-time cleanup on paste or typing
+    input.addEventListener('input', () => {
+      const original = input.value;
+      const cleaned = original
+        .replace(/[0-9۰-۹٠-٩a-zA-Z]/g, '')
+        .replace(/[^\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\s]/g, '');
+
+      if (original !== cleaned) {
+        input.value = cleaned;
+        setFieldError(id, true, `اردو کی جگہ ریاضی یا انگلش قبول نہیں کی جا سکتی!`);
+        setTimeout(() => {
+          if (input.value.trim().length >= minLen) setFieldError(id, false);
+        }, 2000);
+      }
+
+      const val = input.value.trim();
+      const isMadrassa = document.getElementById('isMadrassaStudent')?.checked;
+      const isRequiredNow = required || (isMadrassa && (id === 'madrassaName' || id === 'madrassaClass'));
+
+      if (val.length === 0) {
+        if (isRequiredNow) {
+          setFieldError(id, true, `${label} درج کرنا لازمی ہے۔`);
+        } else {
+          setFieldError(id, false);
+        }
+      } else if (val.length < minLen) {
+        setFieldError(id, true, `${label} کم از کم ${minLen} اردو حروف پر مشتمل ہونا چاہیے۔`);
+      } else {
+        setFieldError(id, false);
+      }
+    });
+
+    input.addEventListener('blur', () => {
+      const val = input.value.trim();
+      const isMadrassa = document.getElementById('isMadrassaStudent')?.checked;
+      const isRequiredNow = required || (isMadrassa && (id === 'madrassaName' || id === 'madrassaClass'));
+
+      if (isRequiredNow && val.length === 0) {
+        setFieldError(id, true, `${label} درج کرنا لازمی ہے۔`);
+      } else if (val.length > 0 && val.length < minLen) {
+        setFieldError(id, true, `${label} کم از کم ${minLen} اردو حروف پر مشتمل ہونا چاہیے۔`);
+      } else {
+        setFieldError(id, false);
+      }
+    });
   });
+
+  // 2. انگلش کی جگہ صرف انگلش (انگلش والی جگہ اردو اور ریاضی قبول نا کرے)
+  const englishNameInput = document.getElementById('fullNameEn');
+  if (englishNameInput) {
+    const englishCharRegex = /^[a-zA-Z\s]$/;
+
+    englishNameInput.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      if (['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
+        return;
+      }
+
+      if (e.key.length === 1) {
+        if (urduCharRegex.test(e.key) && !/^\s$/.test(e.key)) {
+          e.preventDefault();
+          setFieldError('fullNameEn', true, 'انگلش کی جگہ اردو قبول نہیں ہے! صرف انگریزی حروف (A-Z) لکھیں۔');
+          setTimeout(() => {
+            if (englishNameInput.value.trim().length >= 3) setFieldError('fullNameEn', false);
+          }, 3000);
+          return;
+        }
+
+        if (digitsRegex.test(e.key)) {
+          e.preventDefault();
+          setFieldError('fullNameEn', true, 'انگلش نام میں ریاضی (نمبرز) کی اجازت نہیں ہے!');
+          setTimeout(() => {
+            if (englishNameInput.value.trim().length >= 3) setFieldError('fullNameEn', false);
+          }, 3000);
+          return;
+        }
+
+        if (!englishCharRegex.test(e.key)) {
+          e.preventDefault();
+          setFieldError('fullNameEn', true, 'صرف انگریزی حروف (A-Z) درج کریں۔');
+          return;
+        }
+      }
+    });
+
+    englishNameInput.addEventListener('input', () => {
+      const original = englishNameInput.value;
+      const cleaned = original.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
+      if (original !== cleaned) {
+        englishNameInput.value = cleaned;
+        setFieldError('fullNameEn', true, 'انگلش نام میں صرف انگریزی حروف A-Z کی اجازت ہے۔');
+      }
+
+      const val = englishNameInput.value.trim();
+      if (val.length === 0) {
+        setFieldError('fullNameEn', true, 'طالب علم کا نام انگلش میں درج کرنا لازمی ہے۔');
+      } else if (val.length < 3) {
+        setFieldError('fullNameEn', true, 'انگلش نام کم از کم 3 حروف (A-Z) پر مشتمل ہونا چاہیے۔');
+      } else {
+        setFieldError('fullNameEn', false);
+      }
+    });
+
+    englishNameInput.addEventListener('blur', () => {
+      const val = englishNameInput.value.trim();
+      if (val.length < 3) {
+        setFieldError('fullNameEn', true, 'طالب علم کا نام انگلش میں درج کرنا لازمی ہے (کم از کم 3 حروف)۔');
+      } else {
+        setFieldError('fullNameEn', false);
+      }
+    });
+  }
+
+  // Email Field (Strict English, Urdu strictly blocked)
+  const emailInput = document.getElementById('email');
+  if (emailInput) {
+    emailInput.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      if (['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
+        return;
+      }
+      if (e.key.length === 1 && urduCharRegex.test(e.key) && !/^\s$/.test(e.key)) {
+        e.preventDefault();
+        setFieldError('email', true, 'ای میل میں اردو حروف کی اجازت نہیں ہے! صرف انگلش لکھیں۔');
+        setTimeout(() => setFieldError('email', false), 3000);
+      }
+    });
+
+    emailInput.addEventListener('input', () => {
+      const original = emailInput.value;
+      const cleaned = original.replace(/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\s]/g, '');
+      if (original !== cleaned) {
+        emailInput.value = cleaned;
+      }
+      const val = emailInput.value.trim();
+      if (val.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+        setFieldError('email', true, 'درست انگلش ای میل ایڈریس درج کریں (مثال: student@gmail.com)');
+      } else {
+        setFieldError('email', false);
+      }
+    });
+  }
+
+  // 3. ریاضی کی جگہ صرف ریاضی (ریاضی والی جگہ اردو اور الفاظ قبول نا کرے)
+  // CNIC: 12345-1234567-1 (13 digits)
+  const cnicInput = document.getElementById('cnic');
+  if (cnicInput) {
+    cnicInput.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      if (['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
+        return;
+      }
+
+      if (e.key.length === 1) {
+        if (urduCharRegex.test(e.key)) {
+          e.preventDefault();
+          setFieldError('cnic', true, 'ریاضی کی جگہ اردو قبول نہیں ہے! شناختی کارڈ میں صرف ہندسے درج کریں۔');
+          setTimeout(() => {
+            const raw = cnicInput.value.replace(/\D/g, '');
+            if (raw.length === 13) setFieldError('cnic', false);
+          }, 3000);
+          return;
+        }
+
+        if (!/^[0-9]$/.test(e.key)) {
+          e.preventDefault();
+          setFieldError('cnic', true, 'اس خانے میں الفاظ کی اجازت نہیں ہے، صرف ریاضی کے ہندسے درج کریں!');
+          setTimeout(() => {
+            const raw = cnicInput.value.replace(/\D/g, '');
+            if (raw.length === 13) setFieldError('cnic', false);
+          }, 3000);
+          return;
+        }
+      }
+    });
+
+    cnicInput.addEventListener('input', (e) => {
+      const urduDigits = {'۰':'0','۱':'1','۲':'2','۳':'3','۴':'4','۵':'5','۶':'6','۷':'7','۸':'8','۹':'9','٠':'0','١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9'};
+      let val = e.target.value.replace(/[۰-۹٠-٩]/g, d => urduDigits[d] || d).replace(/\D/g, '');
+      if (val.length > 13) val = val.substring(0, 13);
+
+      let formatted = '';
+      if (val.length > 0) formatted += val.substring(0, Math.min(5, val.length));
+      if (val.length > 5) formatted += '-' + val.substring(5, Math.min(12, val.length));
+      if (val.length > 12) formatted += '-' + val.substring(12, 13);
+      e.target.value = formatted;
+
+      if (val.length === 13) {
+        setFieldError('cnic', false);
+      } else if (val.length > 0) {
+        setFieldError('cnic', true, `شناختی کارڈ 13 ریاضی ہندسوں کا ہونا ضروری ہے (اب تک ${val.length} ہندسے درج ہیں)`);
+      } else {
+        setFieldError('cnic', true, 'شناختی کارڈ یا ب فارم نمبر درج کرنا لازمی ہے۔');
+      }
+    });
+
+    cnicInput.addEventListener('blur', () => {
+      const raw = cnicInput.value.replace(/\D/g, '');
+      if (raw.length === 13) {
+        setFieldError('cnic', false);
+      } else {
+        setFieldError('cnic', true, 'شناختی کارڈ یا ب فارم نمبر مکمل 13 ریاضی ہندسوں کا ہونا لازمی ہے۔');
+      }
+    });
+  }
+
+  // Mobile / WhatsApp: 0300-1234567 (11 digits)
+  const phoneInput = document.getElementById('phone');
+  if (phoneInput) {
+    phoneInput.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      if (['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
+        return;
+      }
+
+      if (e.key.length === 1) {
+        if (urduCharRegex.test(e.key)) {
+          e.preventDefault();
+          setFieldError('phone', true, 'ریاضی کی جگہ اردو قبول نہیں ہے! موبائل نمبر میں صرف ہندسے درج کریں۔');
+          setTimeout(() => {
+            const raw = phoneInput.value.replace(/\D/g, '');
+            if (raw.length === 11 && raw.startsWith('03')) setFieldError('phone', false);
+          }, 3000);
+          return;
+        }
+
+        if (!/^[0-9]$/.test(e.key)) {
+          e.preventDefault();
+          setFieldError('phone', true, 'اس خانے میں الفاظ کی اجازت نہیں ہے، صرف ریاضی کے ہندسے درج کریں!');
+          setTimeout(() => {
+            const raw = phoneInput.value.replace(/\D/g, '');
+            if (raw.length === 11 && raw.startsWith('03')) setFieldError('phone', false);
+          }, 3000);
+          return;
+        }
+      }
+    });
+
+    phoneInput.addEventListener('input', (e) => {
+      const urduDigits = {'۰':'0','۱':'1','۲':'2','۳':'3','۴':'4','۵':'5','۶':'6','۷':'7','۸':'8','۹':'9','٠':'0','١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9'};
+      let val = e.target.value.replace(/[۰-۹٠-٩]/g, d => urduDigits[d] || d).replace(/\D/g, '');
+      if (val.length > 11) val = val.substring(0, 11);
+
+      let formatted = '';
+      if (val.length > 0) formatted += val.substring(0, Math.min(4, val.length));
+      if (val.length > 4) formatted += '-' + val.substring(4, Math.min(11, val.length));
+      e.target.value = formatted;
+
+      if (val.length === 11) {
+        if (!val.startsWith('03')) {
+          setFieldError('phone', true, 'پاکستانی موبائل نمبر 03 سے شروع ہونا لازمی ہے (مثال: 0300-1234567)');
+        } else {
+          setFieldError('phone', false);
+        }
+      } else if (val.length > 0) {
+        setFieldError('phone', true, `موبائل نمبر 11 ریاضی ہندسوں کا ہونا ضروری ہے (اب تک ${val.length} ہندسے درج ہیں)`);
+      } else {
+        setFieldError('phone', true, 'موبائل / واٹس ایپ نمبر درج کرنا لازمی ہے۔');
+      }
+    });
+
+    phoneInput.addEventListener('blur', () => {
+      const raw = phoneInput.value.replace(/\D/g, '');
+      if (raw.length === 11 && raw.startsWith('03')) {
+        setFieldError('phone', false);
+      } else {
+        setFieldError('phone', true, 'درست 11 ہندسوں کا موبائل نمبر درج کریں جو 03 سے شروع ہو (مثال: 0300-1234567)۔');
+      }
+    });
+  }
+
+  // Transaction ID (TID): Math digits only
+  const tidInput = document.getElementById('transactionId');
+  if (tidInput) {
+    tidInput.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      if (['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) {
+        return;
+      }
+
+      if (e.key.length === 1) {
+        if (urduCharRegex.test(e.key)) {
+          e.preventDefault();
+          setFieldError('transactionId', true, 'ریاضی کی جگہ اردو قبول نہیں ہے! رسید نمبر میں صرف ہندسے درج کریں۔');
+          setTimeout(() => setFieldError('transactionId', false), 3000);
+          return;
+        }
+
+        if (!/^[0-9]$/.test(e.key)) {
+          e.preventDefault();
+          setFieldError('transactionId', true, 'رسید نمبر (TID) میں صرف ریاضی کے ہندسے درج کریں!');
+          setTimeout(() => setFieldError('transactionId', false), 3000);
+          return;
+        }
+      }
+    });
+
+    tidInput.addEventListener('input', (e) => {
+      const urduDigits = {'۰':'0','۱':'1','۲':'2','۳':'3','۴':'4','۵':'5','۶':'6','۷':'7','۸':'8','۹':'9','٠':'0','١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9'};
+      const cleaned = e.target.value.replace(/[۰-۹٠-٩]/g, d => urduDigits[d] || d).replace(/\D/g, '');
+      if (e.target.value !== cleaned) {
+        e.target.value = cleaned;
+      }
+      setFieldError('transactionId', false);
+    });
+  }
 }
 
 // Calculate fee dynamically (Full Advance Payment)
@@ -433,9 +804,11 @@ async function handleFormSubmit(e) {
   const submitBtnText = document.getElementById('submitBtnText');
   const submitSpinner = document.getElementById('submitSpinner');
 
-  const selectedCourse = document.getElementById('selectedCourse')?.value || 'مکمل کورس: اے آئی مع انگلش لینگویج (AI + English Language)';
+  const selectedCourse = document.getElementById('selectedCourse')?.value || 'مکمل کورس: آن لائن ویب و موبائل ایپ ڈویلپمنٹ کورس';
   const fullName = document.getElementById('fullName')?.value.trim();
+  const fullNameEn = document.getElementById('fullNameEn')?.value.trim();
   const fatherName = document.getElementById('fatherName')?.value.trim();
+  const gender = document.querySelector('input[name="gender"]:checked')?.value || 'male';
   const cnic = document.getElementById('cnic')?.value.trim();
   const phone = document.getElementById('phone')?.value.trim();
   const city = document.getElementById('city')?.value.trim();
@@ -453,26 +826,111 @@ async function handleFormSubmit(e) {
   const transactionId = document.getElementById('transactionId')?.value.trim() || '';
   const declaration = document.getElementById('declaration')?.checked;
 
-  if (!fullName || !fatherName || !cnic || !phone || !city) {
-    showAlert('برائے مہربانی تمام لازمی خانے (نام، والد کا نام، شناختی کارڈ، فون اور شہر) مکمل پر کریں۔');
+  // 1. اردو کی جگہ صرف اردو چیک (اردو والی جگہ ریاضی قبول نا کرے)
+  const urduValidationList = [
+    { id: 'fullName', name: 'طالب علم کا نام (اردو میں)', val: fullName, min: 3, req: true },
+    { id: 'fatherName', name: 'والد کا نام (اردو میں)', val: fatherName, min: 3, req: true },
+    { id: 'city', name: 'شہر یا گاؤں کا نام (اردو میں)', val: city, min: 2, req: true }
+  ];
+  if (isMadrassa) {
+    urduValidationList.push(
+      { id: 'madrassaName', name: 'جامعہ / مدرسے کا نام (اردو میں)', val: madrassaName, min: 3, req: true },
+      { id: 'madrassaClass', name: 'موجودہ درجہ / کلاس (اردو میں)', val: madrassaClass, min: 2, req: true }
+    );
+  }
+
+  const urduOnlyRegex = /^[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\s]+$/;
+  for (const item of urduValidationList) {
+    const el = document.getElementById(item.id);
+    if (item.req && (!item.val || item.val.length === 0)) {
+      el?.focus();
+      showAlert(`برائے مہربانی "${item.name}" درج کریں۔`);
+      return;
+    }
+    if (item.val && /[0-9۰-۹٠-٩]/.test(item.val)) {
+      el?.focus();
+      showAlert(`اردو کی جگہ ریاضی قبول نہیں ہے! "${item.name}" میں صرف اردو الفاظ لکھیں۔`);
+      return;
+    }
+    if (item.val && /[a-zA-Z]/.test(item.val)) {
+      el?.focus();
+      showAlert(`اس خانے میں انگلش کی اجازت نہیں ہے! "${item.name}" میں صرف اردو الفاظ لکھیں۔`);
+      return;
+    }
+    if (item.val && !urduOnlyRegex.test(item.val)) {
+      el?.focus();
+      showAlert(`"${item.name}" میں صرف اردو حروف درج کریں۔`);
+      return;
+    }
+    if (item.val && item.val.length < item.min) {
+      el?.focus();
+      showAlert(`"${item.name}" کم از کم ${item.min} اردو حروف پر مشتمل ہونا چاہیے۔`);
+      return;
+    }
+  }
+
+  // 2. انگلش کی جگہ صرف انگلش چیک
+  if (!fullNameEn || fullNameEn.length === 0) {
+    document.getElementById('fullNameEn')?.focus();
+    showAlert('برائے مہربانی طالب علم کا نام انگلش میں (Student Name in English) درج کریں۔');
+    return;
+  }
+  if (!/^[a-zA-Z\s]+$/.test(fullNameEn)) {
+    document.getElementById('fullNameEn')?.focus();
+    showAlert('انگلش کی جگہ اردو یا ریاضی قبول نہیں ہے! صرف انگریزی حروف (A-Z) لکھیں۔');
+    return;
+  }
+  if (fullNameEn.length < 3) {
+    document.getElementById('fullNameEn')?.focus();
+    showAlert('انگلش نام کم از کم 3 حروف پر مشتمل ہونا چاہیے۔');
     return;
   }
 
-  if (/[<>]/.test(fullName) || /[<>]/.test(fatherName) || /[<>]/.test(city)) {
-    showAlert('سیکیورٹی وارننگ: نام اور شہر میں غیر قانونی علامات (< >) استعمال نہیں ہو سکتیں۔');
-    return;
+  if (email && email.length > 0) {
+    if (/[\u0600-\u06FF]/.test(email) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      document.getElementById('email')?.focus();
+      showAlert('برائے مہربانی درست انگلش ای میل ایڈریس درج کریں (مثال: student@gmail.com)۔');
+      return;
+    }
   }
 
+  // 3. ریاضی کی جگہ صرف ریاضی چیک (ریاضی کی جگہ اردو قبول نا کرے)
+  if (/[\u0600-\u06FF]/.test(cnic)) {
+    document.getElementById('cnic')?.focus();
+    showAlert('ریاضی کی جگہ اردو قبول نہیں ہے! شناختی کارڈ میں صرف 13 ہندسے درج کریں۔');
+    return;
+  }
   const cleanCnic = cnic.replace(/\D/g, '');
   if (cleanCnic.length !== 13) {
-    showAlert('شناختی کارڈ یا ب فارم نمبر 13 ہندسوں پر مشتمل ہونا لازمی ہے۔');
+    document.getElementById('cnic')?.focus();
+    showAlert('سیکیورٹی وارننگ: شناختی کارڈ یا ب فارم میں صرف ریاضی کے 13 ہندسے درج کرنا لازمی ہے۔');
     return;
   }
 
-  const cleanPhone = phone.replace(/\D/g, '');
-  if (cleanPhone.length < 10 || cleanPhone.length > 12) {
-    showAlert('برائے مہربانی درست موبائل / واٹس ایپ نمبر درج کریں۔');
+  if (/[\u0600-\u06FF]/.test(phone)) {
+    document.getElementById('phone')?.focus();
+    showAlert('ریاضی کی جگہ اردو قبول نہیں ہے! موبائل نمبر میں صرف 11 ہندسے درج کریں۔');
     return;
+  }
+  const cleanPhone = phone.replace(/\D/g, '');
+  if (cleanPhone.length !== 11 || !cleanPhone.startsWith('03')) {
+    document.getElementById('phone')?.focus();
+    showAlert('سیکیورٹی وارننگ: موبائل / واٹس ایپ نمبر میں صرف ریاضی کے 11 ہندسے درج کریں جو 03 سے شروع ہوں (مثال: 0300-1234567)۔');
+    return;
+  }
+
+  if (transactionId) {
+    if (/[\u0600-\u06FF]/.test(transactionId)) {
+      document.getElementById('transactionId')?.focus();
+      showAlert('ریاضی کی جگہ اردو قبول نہیں ہے! رسید نمبر میں صرف ہندسے درج کریں۔');
+      return;
+    }
+    const cleanTid = transactionId.replace(/\D/g, '');
+    if (cleanTid.length === 0 || cleanTid !== transactionId.replace(/[\s\-]/g, '')) {
+      document.getElementById('transactionId')?.focus();
+      showAlert('سیکیورٹی وارننگ: رسید نمبر / TID میں صرف ریاضی کے ہندسے درج کیے جا سکتے ہیں۔');
+      return;
+    }
   }
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -558,7 +1016,10 @@ async function handleFormSubmit(e) {
         selectedCourse,
         hasLaptop,
         fullName: fullName.replace(/[<>]/g, ''),
+        fullNameEn: (fullNameEn || '').replace(/[<>]/g, '').toUpperCase(),
         fatherName: fatherName.replace(/[<>]/g, ''),
+        gender: gender,
+        genderUrdu: gender === 'female' ? 'فی میل (عورت / Female)' : 'میل (مرد / Male)',
         cnic: cnic.replace(/[<>]/g, ''),
         phone: phone.replace(/[<>]/g, ''),
         email: email.replace(/[<>]/g, ''),
@@ -656,6 +1117,10 @@ function showAdmissionSlip(adm) {
   }
 
   document.getElementById('slipName').textContent = escapeHtml(adm.fullName);
+  const elSlipNameEn = document.getElementById('slipNameEn');
+  if (elSlipNameEn) elSlipNameEn.textContent = escapeHtml(adm.fullNameEn || '-');
+  const elSlipGender = document.getElementById('slipGender');
+  if (elSlipGender) elSlipGender.textContent = escapeHtml(adm.genderUrdu || (adm.gender === 'female' ? 'فی میل (عورت)' : 'میل (مرد)'));
   document.getElementById('slipFatherName').textContent = escapeHtml(adm.fatherName);
   document.getElementById('slipCnic').textContent = escapeHtml(adm.cnic);
   document.getElementById('slipPhone').textContent = escapeHtml(adm.phone);
