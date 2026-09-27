@@ -340,6 +340,23 @@
       <div id="formAlert" class="hidden mb-6 p-4 rounded-xl border text-sm flex items-start gap-3"></div>
 
       <form id="admissionForm" enctype="multipart/form-data" novalidate>
+
+        <!-- SECURITY ASSURANCE BADGE BANNER -->
+        <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-300 flex items-center justify-between gap-3 text-emerald-950 shadow-sm">
+          <div class="flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-sm">
+              <i class="fa-solid fa-shield-halved"></i>
+            </span>
+            <div>
+              <div class="font-black text-sm sm:text-base text-emerald-950">آن لائن داخلہ فارم: فل سیکیورٹی فعال ہے</div>
+              <div class="text-xs sm:text-sm text-emerald-900 font-medium">الفاظ کے خانوں میں صرف الفاظ (حروف) اور نمبرز کے خانوں میں صرف ہندسے ہی قبول کیے جائیں گے۔</div>
+            </div>
+          </div>
+          <span class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-emerald-800 border border-emerald-300 shadow-xs">
+            <i class="fa-solid fa-lock text-emerald-600"></i>
+            <span>محفوظ ڈیٹا انٹری</span>
+          </span>
+        </div>
         
         <!-- SECTION 1: ذاتی معلومات (Personal Information) -->
         <div class="mb-10">
@@ -383,42 +400,78 @@
               </div>
             </div>
 
-            <!-- Full Name -->
+            <!-- Full Name (Strict Words Only) -->
             <div>
-              <label for="fullName" class="block text-sm font-bold text-slate-800 mb-1.5">
-                طالب علم کا مکمل نام <span class="text-rose-500">*</span>
-              </label>
-              <input type="text" id="fullName" name="fullName" required placeholder="مثال: محمد احمد" 
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="fullName" class="block text-sm font-bold text-slate-800">
+                  طالب علم کا مکمل نام <span class="text-rose-500">*</span>
+                </label>
+                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100/90 border border-emerald-300 px-2 py-0.5 rounded font-sans">
+                  <i class="fa-solid fa-font text-[10px]"></i>صرف الفاظ
+                </span>
+              </div>
+              <input type="text" id="fullName" name="fullName" required placeholder="مثال: محمد احمد" autocomplete="name"
                 class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 text-sm input-field focus:outline-none bg-white text-slate-900 placeholder-slate-400">
+              <div id="fullNameError" class="text-xs text-rose-600 font-bold mt-1.5 hidden flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 text-xs shrink-0"></i>
+                <span id="fullNameErrorText">نام میں صرف حروف (الفاظ) درج کریں، نمبر کی اجازت نہیں</span>
+              </div>
             </div>
 
-            <!-- Father Name -->
+            <!-- Father Name (Strict Words Only) -->
             <div>
-              <label for="fatherName" class="block text-sm font-bold text-slate-800 mb-1.5">
-                والد کا نام <span class="text-rose-500">*</span>
-              </label>
-              <input type="text" id="fatherName" name="fatherName" required placeholder="مثال: عبداللہ خان" 
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="fatherName" class="block text-sm font-bold text-slate-800">
+                  والد کا نام <span class="text-rose-500">*</span>
+                </label>
+                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100/90 border border-emerald-300 px-2 py-0.5 rounded font-sans">
+                  <i class="fa-solid fa-font text-[10px]"></i>صرف الفاظ
+                </span>
+              </div>
+              <input type="text" id="fatherName" name="fatherName" required placeholder="مثال: عبداللہ خان"
                 class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 text-sm input-field focus:outline-none bg-white text-slate-900 placeholder-slate-400">
+              <div id="fatherNameError" class="text-xs text-rose-600 font-bold mt-1.5 hidden flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 text-xs shrink-0"></i>
+                <span id="fatherNameErrorText">والد کے نام میں صرف حروف (الفاظ) درج کریں، نمبر کی اجازت نہیں</span>
+              </div>
             </div>
 
-            <!-- CNIC / B-Form -->
+            <!-- CNIC / B-Form (Strict Numbers Only) -->
             <div>
-              <label for="cnic" class="block text-sm font-bold text-slate-800 mb-1.5">
-                شناختی کارڈ نمبر یا ب فارم <span class="text-rose-500">*</span>
-              </label>
-              <input type="text" id="cnic" name="cnic" required placeholder="12345-1234567-1" maxlength="15"
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="cnic" class="block text-sm font-bold text-slate-800">
+                  شناختی کارڈ نمبر یا ب فارم <span class="text-rose-500">*</span>
+                </label>
+                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-blue-800 bg-blue-100/90 border border-blue-300 px-2 py-0.5 rounded font-sans">
+                  <i class="fa-solid fa-hashtag text-[10px]"></i>صرف نمبر (13 ہندسے)
+                </span>
+              </div>
+              <input type="text" id="cnic" name="cnic" required placeholder="12345-1234567-1" maxlength="15" inputmode="numeric"
                 class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 text-sm input-field focus:outline-none bg-white text-slate-900 placeholder-slate-400 font-mono text-left dir-ltr">
-              <span class="text-[11px] text-slate-500 mt-1 block">بغیر ڈیش یا ڈیش کے ساتھ (13 ہندسے)</span>
+              <span class="text-[11px] text-slate-500 mt-1 block">بغیر ڈیش یا ڈیش کے ساتھ (خودکار فارمیٹ 12345-1234567-1)</span>
+              <div id="cnicError" class="text-xs text-rose-600 font-bold mt-1.5 hidden flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 text-xs shrink-0"></i>
+                <span id="cnicErrorText">شناختی کارڈ میں صرف 13 ہندسے (نمبرز) درج کریں</span>
+              </div>
             </div>
 
-            <!-- Mobile / WhatsApp -->
+            <!-- Mobile / WhatsApp (Strict Numbers Only) -->
             <div>
-              <label for="phone" class="block text-sm font-bold text-slate-800 mb-1.5">
-                موبائل / واٹس ایپ نمبر <span class="text-rose-500">*</span>
-              </label>
-              <input type="tel" id="phone" name="phone" required placeholder="0300-1234567"
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="phone" class="block text-sm font-bold text-slate-800">
+                  موبائل / واٹس ایپ نمبر <span class="text-rose-500">*</span>
+                </label>
+                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-blue-800 bg-blue-100/90 border border-blue-300 px-2 py-0.5 rounded font-sans">
+                  <i class="fa-solid fa-phone text-[10px]"></i>صرف نمبر (11 ہندسے)
+                </span>
+              </div>
+              <input type="tel" id="phone" name="phone" required placeholder="0300-1234567" maxlength="12" inputmode="numeric"
                 class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 text-sm input-field focus:outline-none bg-white text-slate-900 placeholder-slate-400 font-mono text-left dir-ltr">
-              <span class="text-[11px] text-slate-500 mt-1 block">کلاس کے واٹس ایپ گروپ میں شامل کرنے کے لیے</span>
+              <span class="text-[11px] text-slate-500 mt-1 block">کلاس کے واٹس ایپ گروپ میں شامل کرنے کے لیے (0300-1234567)</span>
+              <div id="phoneError" class="text-xs text-rose-600 font-bold mt-1.5 hidden flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 text-xs shrink-0"></i>
+                <span id="phoneErrorText">درست پاکستانی 11 ہندسوں کا موبائل نمبر درج کریں (03xx-xxxxxxx)</span>
+              </div>
             </div>
 
             <!-- Email (Optional) -->
@@ -448,13 +501,22 @@
               </select>
             </div>
 
-            <!-- City -->
+            <!-- City (Strict Words Only) -->
             <div>
-              <label for="city" class="block text-sm font-bold text-slate-800 mb-1.5">
-                شہر یا گاؤں کا نام <span class="text-rose-500">*</span>
-              </label>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="city" class="block text-sm font-bold text-slate-800">
+                  شہر یا گاؤں کا نام <span class="text-rose-500">*</span>
+                </label>
+                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100/90 border border-emerald-300 px-2 py-0.5 rounded font-sans">
+                  <i class="fa-solid fa-font text-[10px]"></i>صرف الفاظ
+                </span>
+              </div>
               <input type="text" id="city" name="city" required placeholder="مثال: لاہور، ملتان، بہاولپور، فیصل آباد"
                 class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 text-sm input-field focus:outline-none bg-white text-slate-900 placeholder-slate-400">
+              <div id="cityError" class="text-xs text-rose-600 font-bold mt-1.5 hidden flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 text-xs shrink-0"></i>
+                <span id="cityErrorText">شہر کے نام میں صرف حروف (الفاظ) درج کریں، نمبر کی اجازت نہیں</span>
+              </div>
             </div>
 
             <!-- Full Address -->
@@ -554,22 +616,40 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <!-- Madrassa Name -->
+              <!-- Madrassa Name (Strict Words Only) -->
               <div>
-                <label for="madrassaName" class="block text-sm font-bold text-slate-800 mb-1.5">
-                  جامعہ / مدرسے کا نام <span class="text-rose-500">*</span>
-                </label>
+                <div class="flex items-center justify-between mb-1.5">
+                  <label for="madrassaName" class="block text-sm font-bold text-slate-800">
+                    جامعہ / مدرسے کا نام <span class="text-rose-500">*</span>
+                  </label>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100/90 border border-emerald-300 px-2 py-0.5 rounded font-sans">
+                    <i class="fa-solid fa-font text-[10px]"></i>صرف الفاظ
+                  </span>
+                </div>
                 <input type="text" id="madrassaName" name="madrassaName" placeholder="مثال: جامعہ دارالعلوم / جامعہ اشرفیہ"
                   class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-300 text-sm input-field focus:outline-none bg-white text-slate-900">
+                <div id="madrassaNameError" class="text-xs text-rose-600 font-bold mt-1.5 hidden flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-exclamation text-rose-500 text-xs shrink-0"></i>
+                  <span id="madrassaNameErrorText">مدرسے کے نام میں صرف حروف (الفاظ) درج کریں</span>
+                </div>
               </div>
 
-              <!-- Madrassa Class / Grade -->
+              <!-- Madrassa Class / Grade (Strict Words Only) -->
               <div>
-                <label for="madrassaClass" class="block text-sm font-bold text-slate-800 mb-1.5">
-                  موجودہ درجہ / کلاس <span class="text-rose-500">*</span>
-                </label>
+                <div class="flex items-center justify-between mb-1.5">
+                  <label for="madrassaClass" class="block text-sm font-bold text-slate-800">
+                    موجودہ درجہ / کلاس <span class="text-rose-500">*</span>
+                  </label>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100/90 border border-emerald-300 px-2 py-0.5 rounded font-sans">
+                    <i class="fa-solid fa-font text-[10px]"></i>صرف الفاظ
+                  </span>
+                </div>
                 <input type="text" id="madrassaClass" name="madrassaClass" placeholder="مثال: درجہ رابعہ / سادسہ / دورہ حدیث"
                   class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-300 text-sm input-field focus:outline-none bg-white text-slate-900">
+                <div id="madrassaClassError" class="text-xs text-rose-600 font-bold mt-1.5 hidden flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-exclamation text-rose-500 text-xs shrink-0"></i>
+                  <span id="madrassaClassErrorText">درجے / کلاس کے نام میں صرف حروف (الفاظ) درج کریں</span>
+                </div>
               </div>
             </div>
 
@@ -687,13 +767,22 @@
               </select>
             </div>
 
-            <!-- Transaction ID -->
+            <!-- Transaction ID (Strict Numbers Only) -->
             <div>
-              <label for="transactionId" class="block text-sm font-bold text-slate-800 mb-1.5">
-                ٹرانزیکشن آئی ڈی (TID / رسید نمبر)
-              </label>
-              <input type="text" id="transactionId" name="transactionId" placeholder="مثال: 84920491823"
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="transactionId" class="block text-sm font-bold text-slate-800">
+                  ٹرانزیکشن آئی ڈی (TID / رسید نمبر)
+                </label>
+                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-blue-800 bg-blue-100/90 border border-blue-300 px-2 py-0.5 rounded font-sans">
+                  <i class="fa-solid fa-hashtag text-[10px]"></i>صرف نمبر
+                </span>
+              </div>
+              <input type="text" id="transactionId" name="transactionId" placeholder="مثال: 84920491823" inputmode="numeric"
                 class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 text-sm input-field focus:outline-none bg-white text-slate-900 font-mono text-left dir-ltr">
+              <div id="transactionIdError" class="text-xs text-rose-600 font-bold mt-1.5 hidden flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 text-xs shrink-0"></i>
+                <span id="transactionIdErrorText">ٹرانزیکشن آئی ڈی میں صرف ہندسے (نمبرز) درج کریں</span>
+              </div>
             </div>
 
             <!-- Payment Receipt Upload -->
@@ -894,6 +983,6 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/app.js?v=9"></script>
+  <script src="js/app.js?v=11"></script>
 </body>
 </html>

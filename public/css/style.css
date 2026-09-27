@@ -119,6 +119,17 @@ input, select, textarea, button, label {
   box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15) !important;
 }
 
+.input-error {
+  border-color: #ef4444 !important;
+  background-color: #fff1f2 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.input-valid {
+  border-color: #16a34a !important;
+  background-color: #f0fdf4 !important;
+}
+
 html {
   scroll-behavior: smooth;
 }
